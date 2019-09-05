@@ -2,6 +2,8 @@
 
 > Client project for SPM server
 
+[![Build Status](https://travis-ci.com/Lakshamana/spm-client.svg?branch=master)](https://travis-ci.com/Lakshamana/spm-client)
+
 ## Build Setup
 
 ``` bash
