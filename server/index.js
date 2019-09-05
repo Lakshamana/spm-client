@@ -1,6 +1,5 @@
 const Koa = require('koa')
 const consola = require('consola')
-// const serve = require('koa-static')
 const send = require('koa-send')
 const Router = require('koa-router')
 const cors = require('@koa/cors')
