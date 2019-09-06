@@ -1,3 +1,5 @@
+const config = require('./config')
+
 module.exports = {
   mode: 'spa',
   /*
@@ -27,7 +29,7 @@ module.exports = {
   /*
    ** Plugins to load before mounting the App
    */
-  plugins: [],
+  plugins: ['~/plugins/window.js'],
   /*
    ** Nuxt.js dev-modules
    */
@@ -45,6 +47,11 @@ module.exports = {
     '@nuxtjs/axios',
     '@nuxtjs/pwa'
   ],
+
+  env: {
+    ...config
+  },
+
   /*
    ** Axios module configuration
    ** See https://axios.nuxtjs.org/options

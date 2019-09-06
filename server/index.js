@@ -15,8 +15,6 @@ const port = config.PORT
 
 app.use(cors({ origin: `${host}` }))
 
-console.log(process.env.MXIMGPATH)
-
 router.get(`/${process.env.MXIMGPATH}/*`, async ctx => {
   await send(ctx, `static/editor/${ctx.path}`)
 })
@@ -24,9 +22,9 @@ router.get(`/${process.env.MXIMGPATH}/*`, async ctx => {
 router.get('*', render)
 app.use(router.routes())
 
-app.listen(port, host)
+app.listen(port)
 consola.ready({
-  message: `Server listening on http://${host}:${port}`,
+  message: `Server listening on ${host}:${port}`,
   badge: true
 })
 

@@ -1,46 +1,83 @@
 <template>
-  <section class="section">
+  <div>
     <div class="columns is-mobile">
-      <card title="Free" icon="github-circle">
-        Open source on
-        <a href="https://github.com/buefy/buefy">
-          GitHub
-        </a>
-      </card>
-
-      <card title="Responsive" icon="cellphone-link">
-        <b class="has-text-grey">
-          Every
-        </b>
-        component is responsive
-      </card>
-
-      <card title="Modern" icon="alert-decagram">
-        Built with
-        <a href="https://vuejs.org/">
-          Vue.js
-        </a>
-        and
-        <a href="http://bulma.io/">
-          Bulma
-        </a>
-      </card>
-
-      <card title="Lightweight" icon="arrange-bring-to-front">
-        No other internal dependency
-      </card>
+      <div id="mainActions">
+        <button
+          v-for="action in actions"
+          :key="action"
+          @click="execute(action)"
+        >
+          {{ action }}
+        </button>
+      </div>
     </div>
-  </section>
+    <Editor ref="wrapper" />
+  </div>
 </template>
 
 <script>
-import Card from '~/components/Card'
+import Editor from '~/components/Editor'
 
 export default {
   name: 'HomePage',
 
   components: {
-    Card
+    Editor
+  },
+  data() {
+    return {
+      actions: [
+        'group',
+        'ungroup',
+        'cut',
+        'copy',
+        'paste',
+        'delete',
+        'undo',
+        'redo',
+        'print',
+        'show',
+        'exportImage'
+      ]
+    }
+  },
+
+  methods: {
+    execute(action) {
+      this.$refs.wrapper.editor.execute(action)
+    }
   }
 }
 </script>
+
+<style>
+#app {
+  font-family: 'Avenir', Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-align: center;
+  color: #2c3e50;
+}
+
+#mainActions {
+  width: auto;
+  padding-top: 1.5em;
+  margin: 0 auto;
+}
+
+#selectActions {
+  width: auto;
+  padding-left: 54px;
+  padding-bottom: 4px;
+}
+
+#zoomActions {
+  width: 100%;
+  padding-left: 54px;
+  padding-top: 4px;
+}
+
+#headerimg {
+  overflow: hidden;
+}
+</style>
