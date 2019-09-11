@@ -125,7 +125,6 @@ export default {
       let editor = null
 
       const hideSplash = () => {
-        // Fades-out the splash screen
         const splash = this.$refs.splash
 
         if (splash != null) {
@@ -152,7 +151,6 @@ export default {
           editor = new mx.mxEditor(node)
           mx.mxObjectCodec.allowEval = false
 
-          // Adds active border for panning inside the container
           editor.graph.createPanningManager = function() {
             const pm = new mx.mxPanningManager(this)
             pm.border = 30
@@ -187,7 +185,6 @@ export default {
             )
           )
 
-          // Updates the window title after opening new files
           const title = document.title
           const funct = sender => {
             document.title = title + ' - ' + sender.getTitle()
@@ -195,45 +192,34 @@ export default {
 
           editor.addListener(mx.mxEvent.OPEN, funct)
 
-          // Prints the current root in the window title if the
-          // current root of the graph changes (drilling).
-          // editor.addListener(mxEvent.ROOT, funct)
           funct(editor)
 
-          // Displays version in statusbar
           editor.setStatus('mxGraph ' + mx.mxClient.VERSION)
 
-          // Shows the application
           hideSplash()
         }
       } catch (e) {
         hideSplash()
-        // Shows an error message if the editor cannot start
+
         mx.mxUtils.alert('Cannot start application: ' + e.message)
-        throw e // for debugging
+        throw e
       }
       return editor
     },
 
     onInit(editor) {
-      // Enables rotation handle
       mx.mxVertexHandler.prototype.rotationEnabled = false
 
-      // Enables guides
       mx.mxGraphHandler.prototype.guidesEnabled = true
 
-      // Alt disables guides
       mx.mxGuide.prototype.isEnabledForEvent = evt => {
         return !mx.mxEvent.isAltDown(evt)
       }
 
-      // Enables snapping waypoints to terminals
       mx.mxEdgeHandler.prototype.snapToTerminals = true
 
       mx.mxGraph.prototype.setCellsResizable(false)
 
-      // Defines an icon for creating new connections in the connection handler.
-      // This will automatically disable the highlighting of the source vertex.
       const IMG_PATH = process.env.MXIMGPATH
       mx.mxConnectionHandler.prototype.connectImage = new mx.mxImage(
         `${IMG_PATH}/connector.gif`,
@@ -241,12 +227,8 @@ export default {
         16
       )
 
-      // Enables connections in the graph and disables
-      // reset of zoom and translate on root change
-      // (ie. switch between XML and graphical mode).
       editor.graph.setConnectable(true)
 
-      // Updates the title if the root changes
       const title = document.getElementById('title')
 
       if (title != null) {
@@ -256,7 +238,6 @@ export default {
         f(editor)
       }
 
-      // Listens vertexes's connect event
       editor.graph.connectionHandler.addListener(
         mx.mxEvent.CONNECT,
         (sender, evt) => {
@@ -288,8 +269,6 @@ export default {
         mx.mxEvent.consume(evt)
       })
 
-      // Defines a new action to switch between
-      // XML and graphical display
       const textNode = this.$refs.xml
       const graphNode = editor.graph.container
       const sourceInput = this.$refs.source
@@ -317,43 +296,32 @@ export default {
 
           textNode.originalValue = null
 
-          // Makes sure nothing is selected in IE
           if (mx.mxClient.IS_IE) {
             mx.mxUtils.clearSelection()
           }
 
           textNode.style.display = 'none'
 
-          // Moves the focus back to the graph
           editor.graph.container.focus()
         }
       }
 
       editor.addAction('switchView', funct)
 
-      // Defines a new action to switch between
-      // XML and graphical display
       mx.mxEvent.addListener(sourceInput, 'click', () => {
         editor.execute('switchView')
       })
 
-      // Only adds image and SVG export if backend is available
-      // NOTE: The old image export in mx.mxEditor is not used,
-      // the urlImage is used for the new export.
       if (editor.urlImage != null) {
-        // Client-side code for image export
         const exportImage = editor => {
           const graph = editor.graph
           const scale = graph.view.scale
           const bounds = graph.getGraphBounds()
 
-          // New image export
           const xmlDoc = mx.mxUtils.createXmlDocument()
           const root = xmlDoc.createElement('output')
           xmlDoc.appendChild(root)
 
-          // Renders graph. Offset will be multiplied with
-          // state's scale when painting state.
           const xmlCanvas = new mx.mxXmlCanvas2D(root)
           xmlCanvas.translate(
             Math.floor(1 / scale - bounds.x),
@@ -367,12 +335,10 @@ export default {
             xmlCanvas
           )
 
-          // Puts request data together
           const w = Math.ceil(bounds.width * scale + 2)
           const h = Math.ceil(bounds.height * scale + 2)
           const xml = mx.mxUtils.getXml(root)
 
-          // Requests image if request is valid
           if (w > 0 && h > 0) {
             const name = 'export.png'
             const format = 'png'
@@ -463,7 +429,7 @@ export default {
 #graph {
   overflow: auto;
   height: 55vh;
-  width: 75vw;
+  width: 80vw;
   cursor: default;
 }
 
@@ -478,14 +444,14 @@ export default {
 }
 
 #xml {
-  height: auto;
-  width: auto;
+  height: 55vh;
+  width: 684px;
   display: none;
   border-style: none;
 }
 
 #splash {
-  padding-top: 230px;
+  padding-top: 27vh;
 }
 
 .source-ipt {
