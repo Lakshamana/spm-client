@@ -24,7 +24,7 @@ app.use(router.routes())
 
 app.listen(port)
 consola.ready({
-  message: `Server listening on ${host}:${port}`,
+  message: `Server listening on http://${host}:${port}`,
   badge: true
 })
 
