@@ -8,16 +8,16 @@
       </header>
       <div class="card-content">
         <div class="content has-text-centered">
-          <b-icon :icon="icon" size="is-large" type="is-primary" />
+          <slot />
         </div>
       </div>
-      <footer class="card-footer">
-        <div class="card-footer-item">
-          <span>
-            <slot />
-          </span>
-        </div>
-      </footer>
+      <template v-if="useFooter">
+        <footer class="card-footer">
+          <div class="card-footer-item">
+            <slot name="footer" />
+          </div>
+        </footer>
+      </template>
     </div>
   </div>
 </template>
@@ -27,11 +27,12 @@ export default {
   props: {
     title: {
       type: String,
-      required: true
+      default: ''
     },
-    icon: {
-      type: String,
-      required: true
+
+    useFooter: {
+      type: Boolean,
+      default: false
     }
   }
 }

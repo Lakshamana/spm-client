@@ -25,9 +25,16 @@
               + New Process
             </a>
             <b-modal :active.sync="openModal">
-              <card title="New Process">
-                ola
-              </card>
+              <form @submit.prevent="onSubmit">
+                <card title="Create new process">
+                  <b-field label="Ident">
+                    <b-input v-model="newProcessForm.ident"></b-input>
+                  </b-field>
+                  <b-button class="is-success" native-type="submit">
+                    Submit
+                  </b-button>
+                </card>
+              </form>
             </b-modal>
           </div>
         </a>
@@ -56,6 +63,17 @@ export default {
         ident: ''
       },
       openModal: false
+    }
+  },
+
+  methods: {
+    onSubmit() {
+      console.log(process.env.API_PORT)
+      this.$axios
+        .post('/api/processes', {
+          ident: this.newProcessForm.ident
+        })
+        .then(({ data }) => console.log(data))
     }
   }
 }

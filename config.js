@@ -12,20 +12,13 @@ if (envSetup.error) {
   throw envSetup.error
 }
 
-const {
-  HOST,
-  PORT,
-  MXIMGPATH,
-  MXCNFPATH,
-  API_SERVER_URL,
-  API_SERVER_PORT
-} = process.env
+const { HOST, PORT, MXIMGPATH, MXCNFPATH, API_HOST, API_PORT } = process.env
 
 module.exports = {
   HOST,
   PORT,
   MXIMGPATH,
   MXCNFPATH,
-  API_SERVER_URL,
-  API_SERVER_PORT
+  API_HOST,
+  API_PORT
 }
