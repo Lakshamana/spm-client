@@ -21,7 +21,7 @@
         <a class="navbar-item has-dropdown is-hoverable">
           <div class="navbar-link">Processes</div>
           <div class="navbar-dropdown">
-            <a href="#" class="navbar-item" @click="openModal = true">
+            <a class="navbar-item" @click="openModal = true">
               + New Process
             </a>
             <b-modal :active.sync="openModal">
@@ -68,12 +68,24 @@ export default {
 
   methods: {
     onSubmit() {
-      console.log(process.env.API_PORT)
       this.$axios
         .post('/api/processes', {
           ident: this.newProcessForm.ident
         })
-        .then(({ data }) => console.log(data))
+        .then(({ data }) => {
+          console.log(data)
+        })
+        .catch(({ response }) => {
+          const message = response.data.userMessage
+          this.$buefy.toast.open({
+            message,
+            type: 'is-danger'
+          })
+        })
+        .finally(() => {
+          this.openModal = false
+          this.newProcessForm.ident = ''
+        })
     }
   }
 }
