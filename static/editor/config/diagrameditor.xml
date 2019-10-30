@@ -98,7 +98,7 @@
 			{
 				var label = cell.getAttribute('label');
 				var style = cell.getStyle();
-			
+
 				return ((label != null) ? ('<b>' + label +
 						'</b> (' + cell.getId() + ')<br>') : '') +
 						((style != null) ? ('<br>Style: ' + style + '<br>') : '') +
@@ -290,7 +290,7 @@
 				function(cell, value)
 				{
 					var previous = null;
-					
+
 					if (value == null || isNaN(value.nodeType))
 					{
 						previous = cell.value.getAttribute('label');
@@ -309,13 +309,13 @@
 						previous = cell.value;
 						cell.value = value;
 					}
-					
+
 					return previous;
 				}
 			]]>
 			</add>
 			<root>
-				<Diagram label="New Process" href="" id="0">
+				<Diagram label="" href="" id="0">
 					<mxCell />
 				</Diagram>
 				<Layer label="Default Layer" id="1">
@@ -326,7 +326,7 @@
 	</mxGraph>
 	<mxDefaultToolbar as="toolbar">
 		<add as="Lock" mode="lock" icon="http://localhost:3000/images/spm/Lock.png">
-			<![CDATA[ 
+			<![CDATA[
 			editor => {
 				if (editor.getToolbar().selectedMode.title === 'Lock') {
 					const nodeList = editor.getToolbar().container.children

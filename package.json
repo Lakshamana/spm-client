@@ -14,15 +14,18 @@
     "ci": "npm test && npm run lint"
   },
   "dependencies": {
+    "@grapoza/vue-tree": "^1.1.0",
     "@koa/cors": "^3.0.0",
     "@nuxtjs/axios": "^5.3.6",
     "@nuxtjs/pwa": "^3.0.0-0",
     "cross-env": "^5.2.1",
     "dotenv": "^8.1.0",
+    "i": "^0.3.6",
     "koa": "^2.6.2",
     "koa-router": "^7.4.0",
     "koa-send": "^5.0.0",
     "mxgraph-lakshamana": "^1.0.1",
+    "npm": "^6.12.1",
     "nuxt": "^2.0.0",
     "nuxt-buefy": "^0.3.2"
   },

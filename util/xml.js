@@ -317,7 +317,7 @@ const xml = `<mxEditor defaultGroup="group" defaultEdge="connector">
     ]]>
     </add>
     <root>
-      <Diagram label="New Process" href="" id="0">
+      <Diagram label="" href="" id="0">
         <mxCell />
       </Diagram>
       <Layer label="Default Layer" id="1">
