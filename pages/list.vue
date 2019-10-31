@@ -26,12 +26,16 @@
             <div class="card-content">
               <div class="content">
                 <p v-for="(value, key) in item" :key="key">
-                  {{ key }}: {{ value }}
+                  <span v-if="key !== 'id'">{{ key }}: {{ value }} </span>
                 </p>
                 <div class="level">
                   <div class="level-left"></div>
                   <div class="level-right">
-                    <b-button class="is-success open-btn">
+                    <b-button
+                      class="is-success open-btn"
+                      :loading="loading"
+                      @click="open"
+                    >
                       Open
                     </b-button>
                   </div>
@@ -51,22 +55,37 @@ export default {
   data() {
     return {
       isOpen: -1,
-      items: []
+      items: [],
+      loading: false
+    }
+  },
+
+  computed: {
+    ref() {
+      return this.$route.query.ref
     }
   },
 
   created() {
-    const ref = this.$route.query.ref
-    this.$axios.get(`/api/${ref}`).then(({ data }) => {
+    this.$axios.get(`/api/${this.ref}`).then(({ data }) => {
       this.items =
         data.length > 0
           ? data.map(i =>
-              removeMatching(i, (attr, k) => {
-                return typeof attr === 'object' || k === 'id'
-              })
+              removeMatching(i, (attr, k) => typeof attr === 'object')
             )
           : []
     })
+  },
+
+  methods: {
+    open() {
+      this.loading = true
+      this.$axios.get(`/api/${this.ref}`).then(({ data }) => {
+        this.loading = false
+        console.log(data)
+      })
+      // .catch(err => {})
+    }
   }
 }
 </script>

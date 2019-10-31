@@ -54,11 +54,14 @@
 
 <script>
 import Card from '@/components/Card'
+import { errorHandler } from '@/components/mixins/errorHandler'
 
 export default {
   components: {
     Card
   },
+
+  mixins: [errorHandler],
 
   data() {
     return {
@@ -78,13 +81,7 @@ export default {
         .then(({ data }) => {
           console.log(data)
         })
-        .catch(({ response }) => {
-          const message = response.data.userMessage
-          this.$buefy.toast.open({
-            message,
-            type: 'is-danger'
-          })
-        })
+        .catch(this.handle)
         .finally(() => {
           this.openModal = false
           this.newProcessForm.ident = ''
