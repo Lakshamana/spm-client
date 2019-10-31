@@ -80,6 +80,9 @@ export default {
         })
         .then(({ data }) => {
           console.log(data)
+          if (this.$route.path === '/list') {
+            location.reload()
+          }
         })
         .catch(this.handle)
         .finally(() => {

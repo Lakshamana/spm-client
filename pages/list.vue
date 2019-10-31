@@ -50,8 +50,10 @@
 </template>
 
 <script>
+import { errorHandler } from '@/components/mixins/errorHandler'
 import { removeMatching } from '@/util/utils'
 export default {
+  mixins: [errorHandler],
   data() {
     return {
       isOpen: -1,
@@ -80,11 +82,13 @@ export default {
   methods: {
     open() {
       this.loading = true
-      this.$axios.get(`/api/${this.ref}`).then(({ data }) => {
-        this.loading = false
-        console.log(data)
-      })
-      // .catch(err => {})
+      this.$axios
+        .get(`/api/${this.ref}`)
+        .then(({ data }) => {
+          this.loading = false
+          console.log(data)
+        })
+        .catch(this.handle)
     }
   }
 }
