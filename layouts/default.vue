@@ -22,8 +22,11 @@
           <div class="navbar-link">Processes</div>
           <div class="navbar-dropdown">
             <a class="navbar-item" @click="openModal = true">
-              + New Process
+              New Process
             </a>
+            <nuxt-link class="navbar-item" to="/list?ref=processes">
+              List Processes
+            </nuxt-link>
             <b-modal :active.sync="openModal">
               <form @submit.prevent="onSubmit">
                 <card title="Create new process">
