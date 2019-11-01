@@ -56,6 +56,7 @@ export default {
         .get(`/api/processes/xml/${this.processId}`)
         .then(({ data }) => {
           console.log(data)
+          this.$refs.wrapper.setXmlValue(data)
         })
     }
   },

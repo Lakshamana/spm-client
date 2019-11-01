@@ -121,6 +121,16 @@ export default {
   },
 
   methods: {
+    setXmlValue(xml) {
+      const textNode = this.$refs.xml
+      if (xml !== textNode.value) {
+        textNode.value = xml
+        const doc = mx.mxUtils.parseXml(textNode.value)
+        const dec = new mx.mxCodec(doc)
+        dec.decode(doc.documentElement, this.editor.graph.getModel())
+      }
+    },
+
     createEditor(config) {
       let editor = null
 
