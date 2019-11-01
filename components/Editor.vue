@@ -185,9 +185,8 @@ export default {
             )
           )
 
-          const title = document.title
           const funct = sender => {
-            document.title = title + ' - ' + sender.getTitle()
+            document.title = sender.getTitle()
           }
 
           editor.addListener(mx.mxEvent.OPEN, funct)

@@ -34,7 +34,7 @@
                     <b-button
                       class="is-success open-btn"
                       :loading="loading"
-                      @click="open"
+                      @click="open(item.id)"
                     >
                       Open
                     </b-button>
@@ -80,13 +80,14 @@ export default {
   },
 
   methods: {
-    open() {
+    open(entityId) {
       this.loading = true
       this.$axios
-        .get(`/api/${this.ref}`)
+        .get(`/api/${this.ref}/${entityId}`)
         .then(({ data }) => {
           this.loading = false
-          console.log(data)
+          this.$store.dispatch('editor/changeProcess', data.id)
+          this.$router.push('/')
         })
         .catch(this.handle)
     }

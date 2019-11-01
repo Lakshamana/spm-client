@@ -16,7 +16,8 @@
 </template>
 
 <script>
-import Editor from '~/components/Editor'
+import { mapState } from 'vuex'
+import Editor from '@/components/Editor'
 
 export default {
   name: 'HomePage',
@@ -24,6 +25,7 @@ export default {
   components: {
     Editor
   },
+
   data() {
     return {
       actions: [
@@ -39,6 +41,22 @@ export default {
         'show',
         'exportImage'
       ]
+    }
+  },
+
+  computed: {
+    ...mapState({
+      processId: state => state.editor.currentProcess
+    })
+  },
+
+  created() {
+    if (this.processId) {
+      this.$axios
+        .get(`/api/processes/xml/${this.processId}`)
+        .then(({ data }) => {
+          console.log(data)
+        })
     }
   },
 
