@@ -262,6 +262,10 @@ export default {
         }
       )
 
+      editor.graph.addListener(mx.mxEvent.ADD_CELLS, evt => {
+        console.log(evt)
+      })
+
       editor.graph.addListener(mx.mxEvent.MOVE_CELLS, (sender, evt) => {
         const cell = editor.graph.getSelectionCell()
         let { x, y } = editor.graph.view.getState(cell).origin

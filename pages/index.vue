@@ -50,6 +50,12 @@ export default {
     })
   },
 
+  watch: {
+    processId(val) {
+      console.log('New Value:', val)
+    }
+  },
+
   created() {
     if (this.processId) {
       this.$axios

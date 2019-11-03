@@ -80,6 +80,7 @@ export default {
         })
         .then(({ data }) => {
           console.log(data)
+          this.$store.commit('editor/setCurrentProcess', data.id)
           if (this.$route.path === '/list') {
             location.reload()
           }
