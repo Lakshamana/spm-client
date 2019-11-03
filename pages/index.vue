@@ -11,7 +11,7 @@
         </button>
       </div>
     </div>
-    <Editor ref="wrapper" />
+    <Editor ref="wrapper" :process-id="processId" />
   </div>
 </template>
 
@@ -48,12 +48,6 @@ export default {
     ...mapState({
       processId: state => state.editor.currentProcess
     })
-  },
-
-  watch: {
-    processId(val) {
-      console.log('New Value:', val)
-    }
   },
 
   created() {

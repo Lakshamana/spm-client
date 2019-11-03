@@ -11,3 +11,14 @@ export function removeMatching(data, callback) {
   }
   return payload
 }
+
+/**
+ * Returns {key: value} object if value,
+ * or `undefined` otherwise
+ * @param {String} key
+ * @param {*} value
+ * @returns {Object} {key: value} || undefined
+ */
+export function maybe(key, value) {
+  return value && { [key]: value }
+}

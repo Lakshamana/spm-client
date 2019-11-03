@@ -41,19 +41,19 @@ const xml = `<mxEditor defaultGroup="group" defaultEdge="connector">
       </mxCell>
     </Decomposed>
   </add>
-  <add as="agent">
-    <Agent label="" href="">
-      <mxCell vertex="1" style="agent">
+  <add as="reqagent">
+    <ReqAgent label="" href="">
+      <mxCell vertex="1" style="reqagent">
         <mxGeometry as="geometry" width="50" height="50" />
       </mxCell>
-    </Agent>
+    </ReqAgent>
   </add>
-  <add as="workgroup">
-    <Workgroup label="">
-      <mxCell vertex="1" style="workgroup">
+  <add as="reqworkgroup">
+    <ReqWorkGroup label="">
+      <mxCell vertex="1" style="reqworkgroup">
         <mxGeometry as="geometry" width="50" height="50" />
       </mxCell>
-    </Workgroup>
+    </ReqWorkGroup>
   </add>
   <add as="artifact">
     <Artifact label="">
@@ -63,18 +63,18 @@ const xml = `<mxEditor defaultGroup="group" defaultEdge="connector">
     </Artifact>
   </add>
   <add as="join">
-    <Join label="">
+    <JoinCon label="">
       <mxCell vertex="1" style="join_or_end_end">
         <mxGeometry as="geometry" width="50" height="50" />
       </mxCell>
-    </Join>
+    </JoinCon>
   </add>
   <add as="branch">
-    <Branch label="">
+    <BranchCon label="">
       <mxCell vertex="1" style="branch_or_end_end">
         <mxGeometry as="geometry" width="50" height="50" />
       </mxCell>
-    </Branch>
+    </BranchCon>
   </add>
 </Array>
 <mxGraph as="graph" allowLoops="1" dropEnabled="1">
@@ -157,7 +157,7 @@ const xml = `<mxEditor defaultGroup="group" defaultEdge="connector">
       <add as="verticalAlign" value="middle" />
       <add as="image" value="${IMG_PATH}/spm/decomposed_blank.gif" />
     </add>
-    <add as="agent">
+    <add as="reqagent">
       <add as="shape" value="image" />
       <add as="perimeter" value="rectanglePerimeter" />
       <add as="fontSize" value="10" />
@@ -165,7 +165,7 @@ const xml = `<mxEditor defaultGroup="group" defaultEdge="connector">
       <add as="verticalAlign" value="middle" />
       <add as="image" value="${IMG_PATH}/spm/agent.png" />
     </add>
-    <add as="workgroup">
+    <add as="reqworkgroup">
       <add as="shape" value="image" />
       <add as="perimeter" value="rectanglePerimeter" />
       <add as="fontSize" value="10" />
@@ -347,11 +347,11 @@ const xml = `<mxEditor defaultGroup="group" defaultEdge="connector">
   </add>
   <add as="Normal" template="normal" icon="${IMG_PATH}/spm/normal.png" />
   <add as="Decomposed" template="decomposed" icon="${IMG_PATH}/spm/decomposed.png" />
-  <add as="Agent" template="agent" icon="${IMG_PATH}/spm/agent.png" />
-  <add as="Workgroup" template="workgroup" icon="${IMG_PATH}/spm/group.png" />
+  <add as="ReqAgent" template="reqagent" icon="${IMG_PATH}/spm/agent.png" />
+  <add as="ReqWorkGroup" template="reqworkgroup" icon="${IMG_PATH}/spm/group.png" />
   <add as="Artifact" template="artifact" icon="${IMG_PATH}/spm/artifact_full.png" />
-  <add as="Join" template="join" icon="${IMG_PATH}/spm/join.png" />
-  <add as="Branch" template="branch" icon="${IMG_PATH}/spm/branch.png" />
+  <add as="JoinCon" template="join" icon="${IMG_PATH}/spm/join.png" />
+  <add as="BranchCon" template="branch" icon="${IMG_PATH}/spm/branch.png" />
 </mxDefaultToolbar>
 </mxEditor>`
 

@@ -53,6 +53,7 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
 import Card from '@/components/Card'
 import { errorHandler } from '@/components/mixins/errorHandler'
 
@@ -72,6 +73,12 @@ export default {
     }
   },
 
+  computed: {
+    ...mapState({
+      processId: state => state.editor.currentProcess
+    })
+  },
+
   methods: {
     onSubmit() {
       this.$axios
@@ -80,7 +87,9 @@ export default {
         })
         .then(({ data }) => {
           console.log(data)
-          this.$store.commit('editor/setCurrentProcess', data.id)
+          if (!this.processId) {
+            this.$store.commit('editor/setCurrentProcess', data.id)
+          }
           if (this.$route.path === '/list') {
             location.reload()
           }

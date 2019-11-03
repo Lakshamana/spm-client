@@ -30,12 +30,31 @@
 
 <script>
 import mxGraphFactory from 'mxgraph-lakshamana'
-import { getXml } from '../util/xml'
+import { getXml } from '@/util/xml'
+import { maybe } from '@/util/utils'
 
 const mx = new mxGraphFactory()
 
+const endpoints = {
+  Normal: 'normals',
+  Decomposed: 'decomposeds',
+  ReqAgent: 'req-agents',
+  ReqWorkGroup: 'req-work-groups',
+  Artifact: 'artifacts',
+  JoinCon: 'join-cons',
+  BranchCon: 'branch-cons'
+}
+
 export default {
   name: 'Editor',
+
+  props: {
+    processId: {
+      type: Number,
+      default: 0
+    }
+  },
+
   data() {
     return {
       editor: undefined,
@@ -81,6 +100,20 @@ export default {
     }
   },
 
+  watch: {
+    processId(val) {
+      console.log('New Value:', val)
+
+      // if our graph is not empty
+      const cells = Object.values(this.editor.graph.model.cells)
+      if (cells.length > 2) {
+        console.log('updating graph state...')
+        // remove first 2 cells
+        this.syncGraphState(cells.slice(2))
+      }
+    }
+  },
+
   created() {
     this.$addToWindow('mxGeometry', mx.mxGeometry)
     this.$addToWindow('mxGraph', mx.mxGraph)
@@ -121,6 +154,10 @@ export default {
   },
 
   methods: {
+    syncGraphState(cells) {
+      console.log(cells)
+    },
+
     setXmlValue(xml) {
       const textNode = this.$refs.xml
       if (xml !== textNode.value) {
@@ -196,7 +233,8 @@ export default {
           )
 
           const funct = sender => {
-            document.title = sender.getTitle()
+            document.title =
+              process.env.npm_package_name + ' - ' + sender.getTitle()
           }
 
           editor.addListener(mx.mxEvent.OPEN, funct)
@@ -262,8 +300,22 @@ export default {
         }
       )
 
-      editor.graph.addListener(mx.mxEvent.ADD_CELLS, evt => {
-        console.log(evt)
+      editor.graph.addListener(mx.mxEvent.ADD_CELLS, (_, evt) => {
+        const cell = evt.getProperty('cells')[0]
+        console.log(cell)
+        const cellType = cell.value.nodeName
+        console.log(cellType, endpoints[cellType])
+        let ident
+        if (!cell.edge) {
+          if (['Decomposed', 'Normal'].includes(cellType)) {
+            ident = prompt("Type activity's ident")
+          }
+          this.$axios
+            .post(`/api/${endpoints[cellType]}`, { ...maybe('ident', ident) })
+            .then(({ data }) => console.log(data))
+            .catch(this.handle)
+        } else {
+        }
       })
 
       editor.graph.addListener(mx.mxEvent.MOVE_CELLS, (sender, evt) => {
