@@ -75,7 +75,7 @@ export default {
 
   computed: {
     ...mapState({
-      processModelId: state => state.editor.currentProcess
+      processModelId: state => state.editor.currentProcessModel
     })
   },
 

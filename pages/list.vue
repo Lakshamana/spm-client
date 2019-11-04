@@ -86,7 +86,10 @@ export default {
         .get(`/api/${this.ref}/${entityId}`)
         .then(({ data }) => {
           this.loading = false
-          this.$store.dispatch('editor/changeProcess', data.id)
+          this.$store.commit(
+            'editor/setCurrentProcessModel',
+            data.theProcessModel.id
+          )
           this.$router.push('/')
         })
         .catch(this.handle)
