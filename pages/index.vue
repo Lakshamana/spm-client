@@ -11,7 +11,7 @@
         </button>
       </div>
     </div>
-    <Editor ref="wrapper" :process-id="processId" />
+    <Editor ref="wrapper" :process-model-id="processModelId" />
   </div>
 </template>
 
@@ -46,14 +46,14 @@ export default {
 
   computed: {
     ...mapState({
-      processId: state => state.editor.currentProcess
+      processModelId: state => state.editor.currentProcess
     })
   },
 
   created() {
-    if (this.processId) {
+    if (this.processModelId) {
       this.$axios
-        .get(`/api/processes/xml/${this.processId}`)
+        .get(`/api/processes/xml/${this.processModelId}`)
         .then(({ data }) => {
           console.log(data)
           this.$refs.wrapper.setXmlValue(data)

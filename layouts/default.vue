@@ -75,7 +75,7 @@ export default {
 
   computed: {
     ...mapState({
-      processId: state => state.editor.currentProcess
+      processModelId: state => state.editor.currentProcess
     })
   },
 
@@ -87,8 +87,11 @@ export default {
         })
         .then(({ data }) => {
           console.log(data)
-          if (!this.processId) {
-            this.$store.commit('editor/setCurrentProcess', data.id)
+          if (!this.processModelId) {
+            this.$store.commit(
+              'editor/setCurrentProcessModel',
+              data.theProcessModel.id
+            )
           }
           if (this.$route.path === '/list') {
             location.reload()

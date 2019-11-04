@@ -49,7 +49,7 @@ export default {
   name: 'Editor',
 
   props: {
-    processId: {
+    processModelId: {
       type: Number,
       default: 0
     }
@@ -101,7 +101,7 @@ export default {
   },
 
   watch: {
-    processId(val) {
+    processModelId(val) {
       console.log('New Value:', val)
 
       // if our graph is not empty
@@ -156,6 +156,15 @@ export default {
   methods: {
     syncGraphState(cells) {
       console.log(cells)
+    },
+
+    setCellEntity(cell, entityId) {
+      const cellType = cell.value.nodeName
+      cell.setId(cellType + '#' + entityId)
+    },
+
+    getEntityId(cellId) {
+      return cellId.split('#')[1]
     },
 
     setXmlValue(xml) {
@@ -305,16 +314,41 @@ export default {
         console.log(cell)
         const cellType = cell.value.nodeName
         console.log(cellType, endpoints[cellType])
-        let ident
         if (!cell.edge) {
+          let ident, processModel
           if (['Decomposed', 'Normal'].includes(cellType)) {
             ident = prompt("Type activity's ident")
+            processModel = {
+              id: this.processModelId
+            }
           }
           this.$axios
-            .post(`/api/${endpoints[cellType]}`, { ...maybe('ident', ident) })
-            .then(({ data }) => console.log(data))
+            .post(`/api/${endpoints[cellType]}`, {
+              ...maybe('ident', ident),
+              ...maybe('theProcessModel', processModel)
+            })
+            .then(({ data }) => {
+              console.log(data)
+              this.setCellEntity(cell, data.id)
+            })
             .catch(this.handle)
         } else {
+          const fromActivityId = this.getEntityId(cell.source.id)
+          const toActivityId = this.getEntityId(cell.target.id)
+          this.$axios
+            .post('/api/simple-cons', {
+              fromActivity: {
+                id: fromActivityId
+              },
+              toActivity: {
+                id: toActivityId
+              }
+            })
+            .then(({ data }) => {
+              console.log(data)
+              this.setCellEntity(cell, data.id)
+            })
+            .catch(this.handle)
         }
       })
 

@@ -1,9 +1,9 @@
 export const state = () => ({
-  currentProcess: undefined
+  currentProcessModel: undefined
 })
 
 export const mutations = {
-  setCurrentProcess(state, processId) {
-    state.currentProcess = processId
+  setCurrentProcessModel(state, processModelId) {
+    state.currentProcessModel = processModelId
   }
 }
