@@ -30,6 +30,7 @@
 
 <script>
 import mxGraphFactory from 'mxgraph-lakshamana'
+import { errorHandler } from './mixins/errorHandler'
 import { getXml } from '@/util/xml'
 import { maybe } from '@/util/utils'
 
@@ -45,8 +46,20 @@ const endpoints = {
   BranchCon: 'branch-cons'
 }
 
+const nodeTypes = {
+  Normal: '6',
+  Decomposed: '7',
+  ReqAgent: '1',
+  ReqWorkGroup: '8',
+  Artifact: '2',
+  JoinCon: '5',
+  BranchCon: '4'
+}
+
 export default {
   name: 'Editor',
+
+  mixins: [errorHandler],
 
   props: {
     processModelId: {
@@ -314,8 +327,8 @@ export default {
         console.log(cell)
         const cellType = cell.value.nodeName
         console.log(cellType, endpoints[cellType])
+        let ident, processModel
         if (!cell.edge) {
-          let ident, processModel
           if (['Decomposed', 'Normal'].includes(cellType)) {
             ident = prompt("Type activity's ident")
             processModel = {
@@ -331,12 +344,17 @@ export default {
               console.log(data)
               this.setCellEntity(cell, data.id)
             })
-            .catch(this.handle)
+            .catch(err => {
+              this.handle(err)
+              editor.graph.removeCells([cell], false)
+            })
         } else {
           const fromActivityId = this.getEntityId(cell.source.id)
           const toActivityId = this.getEntityId(cell.target.id)
+          ident = fromActivityId + 'to' + toActivityId
           this.$axios
             .post('/api/simple-cons', {
+              ident,
               fromActivity: {
                 id: fromActivityId
               },
@@ -348,8 +366,19 @@ export default {
               console.log(data)
               this.setCellEntity(cell, data.id)
             })
-            .catch(this.handle)
+            .catch(err => {
+              this.handle(err)
+              editor.graph.removeCells([cell], true)
+            })
         }
+        this.$axios.post('/api/easy-modeling', {
+          processIdent: this.processModelId,
+          idents: [ident],
+          xs: [cell.geometry.x],
+          ys: [cell.geometry.y],
+          nodeTypes: [nodeTypes[cellType]],
+          referredObjs: [cell.id]
+        })
       })
 
       editor.graph.addListener(mx.mxEvent.MOVE_CELLS, (sender, evt) => {
