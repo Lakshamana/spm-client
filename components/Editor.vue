@@ -173,8 +173,7 @@ export default {
     },
 
     setCellEntity(cell, entityId) {
-      const cellType = cell.value.nodeName
-      cell.setId(cellType + '#' + entityId)
+      cell.setId(entityId)
     },
 
     getEntityId(cellId) {
