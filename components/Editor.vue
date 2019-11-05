@@ -46,16 +46,6 @@ const endpoints = {
   BranchCon: 'branch-cons'
 }
 
-const nodeTypes = {
-  Normal: '6',
-  Decomposed: '7',
-  ReqAgent: '1',
-  ReqWorkGroup: '8',
-  Artifact: '2',
-  JoinCon: '5',
-  BranchCon: '4'
-}
-
 export default {
   name: 'Editor',
 
@@ -169,6 +159,17 @@ export default {
   methods: {
     syncGraphState(cells) {
       console.log(cells)
+    },
+
+    getCoordinateResponse(cell) {
+      const { x, y } = cell.geometry
+      this.$axios.post('/api/easy-modeling', {
+        processId: this.processModelId,
+        referedObjectId: cell.id,
+        nodeType: cell.value.nodeName,
+        x,
+        y
+      })
     },
 
     setCellEntity(cell, entityId) {
@@ -340,9 +341,9 @@ export default {
               ...maybe('ident', ident),
               ...maybe('theProcessModel', processModel)
             })
-            .then(({ data }) => {
+            .then(async ({ data }) => {
               console.log(data)
-              this.setCellEntity(cell, data.id)
+              await this.setCellEntity(cell, data.id)
             })
             .catch(err => {
               this.handle(err)
@@ -362,23 +363,16 @@ export default {
                 id: toActivityId
               }
             })
-            .then(({ data }) => {
+            .then(async ({ data }) => {
               console.log(data)
               this.setCellEntity(cell, data.id)
+              await this.getCoordinateResponse(cell)
             })
             .catch(err => {
               this.handle(err)
               editor.graph.removeCells([cell], true)
             })
         }
-        this.$axios.post('/api/easy-modeling', {
-          processIdent: this.processModelId,
-          idents: [ident],
-          xs: [cell.geometry.x],
-          ys: [cell.geometry.y],
-          nodeTypes: [nodeTypes[cellType]],
-          referredObjs: [cell.id]
-        })
       })
 
       editor.graph.addListener(mx.mxEvent.MOVE_CELLS, (sender, evt) => {
