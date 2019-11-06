@@ -165,7 +165,7 @@ export default {
       const { x, y } = cell.geometry
       await this.$axios.post('/api/easy-modeling', {
         processId: this.processModelId,
-        referedObjectId: cell.id,
+        referedObjectId: this.getEntityId(cell.id),
         nodeType: cell.value.nodeName,
         x,
         y
@@ -340,12 +340,10 @@ export default {
               ...maybe('ident', ident),
               ...maybe('theProcessModel', processModel)
             })
-            .then(({ data }) => {
-              console.log(data)
-              this.setCellEntity(cell, data.id)
-              this.getCoordinateResponse(cell).then(response => {
-                console.log(response.data)
-              })
+            .then(async ({ data }) => {
+              console.log(await data)
+              this.setCellEntity(cell, await data.id)
+              await this.getCoordinateResponse(cell)
             })
             .catch(err => {
               this.handle(err)
@@ -357,7 +355,7 @@ export default {
           ident = fromActivityId + 'to' + toActivityId
           console.log('passed')
           this.$axios
-            .post('/api/simple-cons', {
+            .post('/api/sequences', {
               ident,
               fromActivity: {
                 id: fromActivityId
