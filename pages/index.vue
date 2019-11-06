@@ -46,17 +46,18 @@ export default {
 
   computed: {
     ...mapState({
-      processModelId: state => state.editor.currentProcessModel
+      processModelId: state => state.editor.currentProcessModel,
+      graphicDescriptionId: state => state.editor.currentGraphicDescription
     })
   },
 
   created() {
     if (this.processModelId) {
       this.$axios
-        .get(`/api/processes/xml/${this.processModelId}`)
+        .get(`/api/graphic-descriptions/${this.graphicDescriptionId}`)
         .then(({ data }) => {
           console.log(data)
-          this.$refs.wrapper.setXmlValue(data)
+          this.$refs.wrapper.setXmlValue(atob(data.description))
         })
     }
   },

@@ -86,9 +86,11 @@ export default {
         .get(`/api/${this.ref}/${entityId}`)
         .then(({ data }) => {
           this.loading = false
+          const { id, theGraphicDescription } = data.theProcessModel
+          this.$store.commit('editor/setCurrentProcessModel', id)
           this.$store.commit(
-            'editor/setCurrentProcessModel',
-            data.theProcessModel.id
+            'editor/setCurrentGraphicDescription',
+            theGraphicDescription.id
           )
           this.$router.push('/')
         })

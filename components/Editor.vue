@@ -172,6 +172,16 @@ export default {
       })
     },
 
+    saveGraphicDescription() {
+      const description = btoa(this.$refs.xml.value)
+      this.$axios.post('/api/graphic-descriptions', {
+        theProcessModel: {
+          id: this.processModelId
+        },
+        description
+      })
+    },
+
     setCellEntity(cell, entityId) {
       cell.setId(cell.value.nodeName + '#' + entityId)
     },
@@ -340,10 +350,10 @@ export default {
               ...maybe('ident', ident),
               ...maybe('theProcessModel', processModel)
             })
-            .then(async ({ data }) => {
-              console.log(await data)
-              this.setCellEntity(cell, await data.id)
-              await this.getCoordinateResponse(cell)
+            .then(({ data }) => {
+              console.log(data)
+              this.setCellEntity(cell, data.id)
+              this.saveGraphicDescription()
             })
             .catch(err => {
               this.handle(err)

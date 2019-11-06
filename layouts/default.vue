@@ -75,7 +75,8 @@ export default {
 
   computed: {
     ...mapState({
-      processModelId: state => state.editor.currentProcessModel
+      processModelId: state => state.editor.currentProcessModel,
+      graphicDescriptionId: state => state.editor.currentGraphicDescription
     })
   },
 
@@ -87,10 +88,12 @@ export default {
         })
         .then(({ data }) => {
           console.log(data)
+          const { id, theGraphicDescription } = data.theProcessModel
           if (!this.processModelId) {
+            this.$store.commit('editor/setCurrentProcessModel', id)
             this.$store.commit(
-              'editor/setCurrentProcessModel',
-              data.theProcessModel.id
+              'editor/setCurrentGraphicDescription',
+              theGraphicDescription.id
             )
           }
           if (this.$route.path === '/list') {
