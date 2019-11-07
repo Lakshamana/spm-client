@@ -30,6 +30,7 @@
 
 <script>
 import mxGraphFactory from 'mxgraph-lakshamana'
+import { mapState } from 'vuex'
 import { errorHandler } from './mixins/errorHandler'
 import { getXml } from '@/util/xml'
 import { maybe } from '@/util/utils'
@@ -103,14 +104,17 @@ export default {
     }
   },
 
+  computed: {
+    ...mapState({
+      graphicDescriptionId: state => state.editor.currentGraphicDescription
+    })
+  },
+
   watch: {
     processModelId(val) {
-      console.log('New Value:', val)
-
       // if our graph is not empty
       const cells = Object.values(this.editor.graph.model.cells)
       if (cells.length > 2) {
-        console.log('updating graph state...')
         // remove first 2 cells
         this.syncGraphState(cells.slice(2))
       }
@@ -157,9 +161,7 @@ export default {
   },
 
   methods: {
-    syncGraphState(cells) {
-      console.log(cells)
-    },
+    syncGraphState(cells) {},
 
     async getCoordinateResponse(cell) {
       const { x, y } = cell.geometry
@@ -172,12 +174,13 @@ export default {
       })
     },
 
-    saveGraphicDescription() {
-      const description = btoa(this.$refs.xml.value)
-      this.$axios.post('/api/graphic-descriptions', {
-        theProcessModel: {
-          id: this.processModelId
-        },
+    async saveGraphicDescription() {
+      const enc = new mx.mxCodec()
+      const node = enc.encode(this.editor.graph.getModel())
+      const xml = mx.mxUtils.getPrettyXml(node)
+      const description = btoa(xml)
+      await this.$axios.put('/api/graphic-descriptions', {
+        id: this.graphicDescriptionId,
         description
       })
     },
@@ -334,9 +337,7 @@ export default {
 
       editor.graph.addListener(mx.mxEvent.ADD_CELLS, (_, evt) => {
         const cell = evt.getProperty('cells')[0]
-        console.log(cell)
         const cellType = cell.value.nodeName
-        console.log(cellType, endpoints[cellType])
         let ident, processModel
         if (!cell.edge) {
           if (['Decomposed', 'Normal'].includes(cellType)) {
@@ -350,10 +351,9 @@ export default {
               ...maybe('ident', ident),
               ...maybe('theProcessModel', processModel)
             })
-            .then(({ data }) => {
-              console.log(data)
-              this.setCellEntity(cell, data.id)
-              this.saveGraphicDescription()
+            .then(async ({ data }) => {
+              this.setCellEntity(cell, await data.id)
+              await this.saveGraphicDescription()
             })
             .catch(err => {
               this.handle(err)
@@ -363,7 +363,6 @@ export default {
           const fromActivityId = this.getEntityId(cell.source.id)
           const toActivityId = this.getEntityId(cell.target.id)
           ident = fromActivityId + 'to' + toActivityId
-          console.log('passed')
           this.$axios
             .post('/api/sequences', {
               ident,
@@ -374,9 +373,9 @@ export default {
                 id: toActivityId
               }
             })
-            .then(({ data }) => {
-              console.log(data)
-              this.setCellEntity(cell, data.id)
+            .then(async ({ data }) => {
+              this.setCellEntity(cell, await data.id)
+              await this.saveGraphicDescription()
             })
             .catch(err => {
               this.handle(err)

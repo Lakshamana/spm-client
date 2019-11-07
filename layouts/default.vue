@@ -88,12 +88,12 @@ export default {
         })
         .then(({ data }) => {
           console.log(data)
-          const { id, theGraphicDescription } = data.theProcessModel
+          const { id, graphicDescription } = data.theProcessModel
           if (!this.processModelId) {
             this.$store.commit('editor/setCurrentProcessModel', id)
             this.$store.commit(
               'editor/setCurrentGraphicDescription',
-              theGraphicDescription.id
+              graphicDescription.id
             )
           }
           if (this.$route.path === '/list') {
