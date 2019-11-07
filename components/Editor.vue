@@ -37,13 +37,45 @@ import { maybe } from '@/util/utils'
 const mx = new mxGraphFactory()
 
 const endpoints = {
-  Normal: 'normals',
-  Decomposed: 'decomposeds',
-  ReqAgent: 'req-agents',
-  ReqWorkGroup: 'req-work-groups',
-  Artifact: 'artifacts',
-  JoinCon: 'join-cons',
-  BranchCon: 'branch-cons'
+  normal: 'normals',
+  decomposed: 'decomposeds',
+  reqagent: 'req-agents',
+  reqworkgroup: 'req-work-groups',
+  artifact: 'artifacts',
+  joincon: 'join-cons',
+  sequence: 'sequences',
+  branchcon: 'branch-cons'
+}
+
+const genericTypes = {
+  activity: ['normal', 'decomposed'],
+  multipleConnection: ['joincon', 'branchcon'],
+  simpleConnection: ['sequence', 'feedback']
+}
+
+const args = {
+  sequence: ['ident', 'fromActivity', 'toActivity'],
+  artifactcon: ['ident', 'theArtifact', 'toActivities', 'fromActivities'],
+  normal: ['ident'],
+  decomposed: ['ident'],
+  reqagent: [],
+  reqworkgroup: [],
+  artifact: ['ident'],
+  // Para criação, basta usar ident
+  joincon: [
+    'ident',
+    ['fromMultipleCons', 'multipleConnection'],
+    ['fromActivities', 'activity'],
+    'toActivity',
+    'toMultipleCon'
+  ],
+  branchcon: [
+    'ident',
+    'fromActivity',
+    'fromMultipleConnection',
+    'toActivities',
+    'toMultipleCons'
+  ]
 }
 
 export default {
@@ -88,10 +120,10 @@ export default {
           targets: ['normal', 'decomposed']
         },
         join: {
-          targets: ['normal', 'decomposed', 'join', 'branch']
+          targets: ['normal', 'decomposed', 'joincon', 'branchcon']
         },
         branch: {
-          targets: ['normal', 'decomposed', 'join', 'branch']
+          targets: ['normal', 'decomposed', 'joincon', 'branchcon']
         }
       },
       validators: {
@@ -170,7 +202,54 @@ export default {
         x,
         y
       })
-      console.log(cell)
+    },
+
+    entityArguments(cell) {
+      const cellType = cell.getAttribute('type')
+      const ident = this.getEntityId(cell.id)
+      const payload = { ident }
+      if (cell.edge) {
+        if (cellType === 'sequence') {
+          payload.fromActivity = this.getEntityId(cell.source.id)
+          payload.toActivity = this.getEntityId(cell.target.id)
+        } else if (cellType === 'artifactcon') {
+          const artifactId =
+            cell.source.getAttribute('type') === 'artifact'
+              ? cell.source.id
+              : cell.target.id
+          if (artifactId === cell.source.id) {
+            payload.toActivities = {
+              id: cell.target.id
+            }
+          } else {
+            payload.fromActivities = {
+              id: cell.source.id
+            }
+          }
+        } else if (cellType === 'connector') {
+          for (const sideNode of ['source', 'target']) {
+            const type = cell[sideNode].getAttribute('type')
+            const params = args[type]
+            const prefix = sideNode === 'source' ? 'to' : 'from'
+            const other = sideNode === 'source' ? 'target' : 'source'
+            const otherType = cell[other].getAttribute('type')
+            for (const p of params) {
+              if (p === 'ident') continue
+              // param p will be an array if it is not the ident
+              const [argname, genericTypeKey] = p
+              if (
+                genericTypes[genericTypeKey].includes(otherType) &&
+                argname.startsWith(prefix)
+              ) {
+                payload[argname] = {
+                  id: cell[other].id
+                }
+              }
+            }
+          }
+        }
+      }
+      return payload
     },
 
     setCellEntity(cell, entityId) {

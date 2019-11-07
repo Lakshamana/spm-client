@@ -21,56 +21,56 @@ const xml = `<mxEditor defaultGroup="group" defaultEdge="connector">
     </Group>
   </add>
   <add as="connector">
-    <Connector label="" href="">
+    <Connector type="" label="" href="">
       <mxCell edge="1">
         <mxGeometry as="geometry" relative="1" />
       </mxCell>
     </Connector>
   </add>
   <add as="normal">
-    <Normal label="" href="">
+    <Normal type="" label="" href="">
       <mxCell vertex="1" style="normal">
         <mxGeometry as="geometry" width="50" height="50" />
       </mxCell>
     </Normal>
   </add>
   <add as="decomposed">
-    <Decomposed label="" href="">
+    <Decomposed type="" label="" href="">
       <mxCell vertex="1" style="decomposed">
         <mxGeometry as="geometry" width="50" height="50" />
       </mxCell>
     </Decomposed>
   </add>
   <add as="reqagent">
-    <ReqAgent label="" href="">
+    <ReqAgent type="" label="" href="">
       <mxCell vertex="1" style="reqagent">
         <mxGeometry as="geometry" width="50" height="50" />
       </mxCell>
     </ReqAgent>
   </add>
   <add as="reqworkgroup">
-    <ReqWorkGroup label="">
+    <ReqWorkGroup type="" label="">
       <mxCell vertex="1" style="reqworkgroup">
         <mxGeometry as="geometry" width="50" height="50" />
       </mxCell>
     </ReqWorkGroup>
   </add>
   <add as="artifact">
-    <Artifact label="">
+    <Artifact type="" label="">
       <mxCell vertex="1" style="artifact_empty">
         <mxGeometry as="geometry" width="50" height="50" />
       </mxCell>
     </Artifact>
   </add>
   <add as="join">
-    <JoinCon label="">
+    <JoinCon type="" label="">
       <mxCell vertex="1" style="join_or_end_end">
         <mxGeometry as="geometry" width="50" height="50" />
       </mxCell>
     </JoinCon>
   </add>
   <add as="branch">
-    <BranchCon label="">
+    <BranchCon type="" label="">
       <mxCell vertex="1" style="branch_or_end_end">
         <mxGeometry as="geometry" width="50" height="50" />
       </mxCell>
