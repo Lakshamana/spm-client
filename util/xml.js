@@ -1,7 +1,7 @@
 /* eslint max-len: 0 */
 const IMG_PATH = process.env.MXIMGPATH
 
-const xml = `<mxEditor defaultGroup="group" defaultEdge="sequence">
+const xml = `<mxEditor defaultGroup="group" defaultEdge="connector">
 <add as="onInit">
   <![CDATA[
   function ()
@@ -20,12 +20,12 @@ const xml = `<mxEditor defaultGroup="group" defaultEdge="sequence">
       <mxCell vertex="1" style="group" connectable="0" />
     </Group>
   </add>
-  <add as="sequence">
-    <Sequence label="" href="">
+  <add as="connector">
+    <Connector label="" href="">
       <mxCell edge="1">
         <mxGeometry as="geometry" relative="1" />
       </mxCell>
-    </Sequence>
+    </Connector>
   </add>
   <add as="normal">
     <Normal label="" href="">
@@ -119,7 +119,7 @@ const xml = `<mxEditor defaultGroup="group" defaultEdge="sequence">
   </add>
   <mxStylesheet as="stylesheet">
     <add as="straightConnector">
-      <add as="shape" value="sequence" />
+      <add as="shape" value="connector" />
       <add as="endArrow" value="classic" />
       <add as="edgeStyle" value="straightEdgeStyle" />
     </add>

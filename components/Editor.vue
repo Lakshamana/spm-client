@@ -63,7 +63,7 @@ export default {
       editor: undefined,
       validatees: {
         normal: {
-          targets: ['normal', 'decomposed', 'artifact', 'join', 'branch'],
+          targets: ['normal', 'decomposed', 'artifact', 'joincon', 'branchcon'],
           constraints: {
             outgoingTo: {
               normal: 1,
@@ -76,7 +76,7 @@ export default {
           }
         },
         decomposed: {
-          targets: ['normal', 'decomposed', 'artifact', 'join', 'branch']
+          targets: ['normal', 'decomposed', 'artifact', 'joincon', 'branchcon']
         },
         agent: {
           targets: ['normal', 'decomposed']
@@ -170,6 +170,7 @@ export default {
         x,
         y
       })
+      console.log(cell)
     },
 
     setCellEntity(cell, entityId) {
@@ -329,7 +330,7 @@ export default {
         console.log(cellType, endpoints[cellType])
         let ident, processModel
         if (!cell.edge) {
-          if (['Decomposed', 'Normal'].includes(cellType)) {
+          if (!['ReqAgent', 'ReqWorkGroup'].includes(cellType)) {
             ident = prompt("Type activity's ident")
             processModel = {
               id: this.processModelId
