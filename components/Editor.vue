@@ -64,7 +64,7 @@ export default {
       editor: undefined,
       validatees: {
         normal: {
-          targets: ['normal', 'decomposed', 'artifact', 'join', 'branch'],
+          targets: ['normal', 'decomposed', 'artifact', 'joincon', 'branchcon'],
           constraints: {
             outgoingTo: {
               normal: 1,
@@ -77,7 +77,7 @@ export default {
           }
         },
         decomposed: {
-          targets: ['normal', 'decomposed', 'artifact', 'join', 'branch']
+          targets: ['normal', 'decomposed', 'artifact', 'joincon', 'branchcon']
         },
         agent: {
           targets: ['normal', 'decomposed']
@@ -174,12 +174,12 @@ export default {
       })
     },
 
-    async saveGraphicDescription() {
+    saveGraphicDescription() {
       const enc = new mx.mxCodec()
       const node = enc.encode(this.editor.graph.getModel())
       const xml = mx.mxUtils.getPrettyXml(node)
       const description = btoa(xml)
-      await this.$axios.put('/api/graphic-descriptions', {
+      this.$axios.put('/api/graphic-descriptions', {
         id: this.graphicDescriptionId,
         description
       })
@@ -340,7 +340,7 @@ export default {
         const cellType = cell.value.nodeName
         let ident, processModel
         if (!cell.edge) {
-          if (['Decomposed', 'Normal'].includes(cellType)) {
+          if (!['ReqAgent', 'ReqWorkGroup'].includes(cellType)) {
             ident = prompt("Type activity's ident")
             processModel = {
               id: this.processModelId
@@ -351,9 +351,9 @@ export default {
               ...maybe('ident', ident),
               ...maybe('theProcessModel', processModel)
             })
-            .then(async ({ data }) => {
-              this.setCellEntity(cell, await data.id)
-              await this.saveGraphicDescription()
+            .then(({ data }) => {
+              this.setCellEntity(cell, data.id)
+              this.saveGraphicDescription()
             })
             .catch(err => {
               this.handle(err)
@@ -373,15 +373,16 @@ export default {
                 id: toActivityId
               }
             })
-            .then(async ({ data }) => {
-              this.setCellEntity(cell, await data.id)
-              await this.saveGraphicDescription()
+            .then(({ data }) => {
+              this.setCellEntity(cell, data.id)
+              this.saveGraphicDescription()
             })
             .catch(err => {
               this.handle(err)
               editor.graph.removeCells([cell], true)
             })
         }
+        mx.mxEvent.consume(evt)
       })
 
       editor.graph.addListener(mx.mxEvent.MOVE_CELLS, (sender, evt) => {

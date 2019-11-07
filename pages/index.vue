@@ -56,7 +56,6 @@ export default {
       this.$axios
         .get(`/api/graphic-descriptions/${this.graphicDescriptionId}`)
         .then(({ data }) => {
-          console.log(data)
           this.$refs.wrapper.setXmlValue(atob(data.description))
         })
     }

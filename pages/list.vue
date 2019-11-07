@@ -86,7 +86,6 @@ export default {
         .get(`/api/${this.ref}/${entityId}`)
         .then(({ data }) => {
           this.loading = false
-          console.log(data)
           const { id, graphicDescription } = data.theProcessModel
           this.$store.commit('editor/setCurrentProcessModel', id)
           this.$store.commit(
