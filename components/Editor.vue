@@ -53,7 +53,9 @@ const edgeTypes = {
   'normal,decomposed': 'sequence',
   artifact: 'artifactcon',
   joincon: 'connector',
-  branchcon: 'connector'
+  branchcon: 'connector',
+  reqagent: 'connector',
+  reqworkgroup: 'connector'
 }
 
 const genericTypes = {
@@ -65,8 +67,20 @@ const genericTypes = {
 const args = {
   sequence: ['ident', 'fromActivity', 'toActivity'],
   artifactcon: ['ident', 'theArtifact', 'toActivities', 'fromActivities'],
-  normal: ['ident', ['toJoinCons', 'multipleConnection', 'list']],
-  decomposed: ['ident', ['toJoinCons', 'multipleConnection', 'list']],
+  normal: [
+    'ident',
+    ['toJoinCons', 'multipleConnection', 'list'],
+    ['fromJoinCons', 'multipleConnection', 'list'],
+    ['fromBranchANDCons', 'multipleConnection', 'list'],
+    ['toBranchCons', 'multipleConnection', 'list']
+  ],
+  decomposed: [
+    'ident',
+    ['toJoinCons', 'multipleConnection', 'list'],
+    ['fromJoinCons', 'multipleConnection', 'list'],
+    ['fromBranchANDCons', 'multipleConnection', 'list'],
+    ['toBranchCons', 'multipleConnection', 'list']
+  ],
   reqagent: ['theNormal'],
   reqworkgroup: ['theNormal'],
   artifact: ['ident'],
@@ -274,19 +288,25 @@ export default {
                 payload.ident = cell[sideNode].getAttribute('label')
                 continue
               }
-              // param p will be an array if it is not the ident
-              const [argname, genericTypeKey, isList] = p
-              console.log(
-                'argname=' + argname + '; genericTypeKey=' + genericTypeKey
-              )
-              if (
-                genericTypes[genericTypeKey].includes(otherType) &&
-                argname.startsWith(prefix)
-              ) {
-                const sendObj = {
+              if (typeof p === 'string') {
+                payload[p] = {
                   id: this.getEntityId(cell[other].id)
                 }
-                payload[argname] = isList ? [sendObj] : sendObj
+              } else {
+                // param p will be an array
+                const [argname, genericTypeKey, isList] = p
+                console.log(
+                  'argname=' + argname + '; genericTypeKey=' + genericTypeKey
+                )
+                if (
+                  genericTypes[genericTypeKey].includes(otherType) &&
+                  argname.startsWith(prefix)
+                ) {
+                  const sendObj = {
+                    id: this.getEntityId(cell[other].id)
+                  }
+                  payload[argname] = isList ? [sendObj] : sendObj
+                }
               }
             }
           }
