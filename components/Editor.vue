@@ -69,17 +69,17 @@ const args = {
   artifactcon: ['ident', 'theArtifact', 'toActivities', 'fromActivities'],
   normal: [
     'ident',
-    ['toJoinCons', 'multipleConnection', 'list'],
-    ['fromJoinCons', 'multipleConnection', 'list'],
-    ['fromBranchANDCons', 'multipleConnection', 'list'],
-    ['toBranchCons', 'multipleConnection', 'list']
+    ['toJoinCons', 'joincon', 'list'],
+    ['fromJoinCons', 'joincon', 'list'],
+    ['fromBranchANDCons', 'branchcon', 'list'],
+    ['toBranchCons', 'branchcon', 'list']
   ],
   decomposed: [
     'ident',
-    ['toJoinCons', 'multipleConnection', 'list'],
-    ['fromJoinCons', 'multipleConnection', 'list'],
-    ['fromBranchANDCons', 'multipleConnection', 'list'],
-    ['toBranchCons', 'multipleConnection', 'list']
+    ['toJoinCons', 'joincon', 'list'],
+    ['fromJoinCons', 'joincon', 'list'],
+    ['fromBranchANDCons', 'branchcon', 'list'],
+    ['toBranchCons', 'branchcon', 'list']
   ],
   reqagent: ['theNormal'],
   reqworkgroup: ['theNormal'],
@@ -294,12 +294,14 @@ export default {
                 }
               } else {
                 // param p will be an array
-                const [argname, genericTypeKey, isList] = p
+                const [argname, typeKey, isList] = p
                 console.log(
-                  'argname=' + argname + '; genericTypeKey=' + genericTypeKey
+                  'argname=' + argname + '; genericTypeKey=' + typeKey
                 )
                 if (
-                  genericTypes[genericTypeKey].includes(otherType) &&
+                  ((genericTypes[typeKey] &&
+                    genericTypes[typeKey].includes(otherType)) ||
+                    typeKey === otherType) &&
                   argname.startsWith(prefix)
                 ) {
                   const sendObj = {
