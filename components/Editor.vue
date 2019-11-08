@@ -32,7 +32,6 @@
 import mxGraphFactory from 'mxgraph-lakshamana'
 import { errorHandler } from './mixins/errorHandler'
 import { getXml } from '@/util/xml'
-import { maybe } from '@/util/utils'
 
 const mx = new mxGraphFactory()
 
@@ -43,8 +42,17 @@ const endpoints = {
   reqworkgroup: 'req-work-groups',
   artifact: 'artifacts',
   joincon: 'join-cons',
+  artifactcon: 'artifactcons',
   sequence: 'sequences',
   branchcon: 'branch-cons'
+}
+
+const edgeTypes = {
+  'normal,normal': 'sequence',
+  'decomposed,decomposed': 'sequence',
+  'normal,decomposed': 'sequence',
+  artifact: 'artifactcon',
+  multipleConnection: 'connector'
 }
 
 const genericTypes = {
@@ -204,14 +212,36 @@ export default {
       })
     },
 
+    setEdgeType(edge) {
+      const ends =
+        edge.source.getAttribute('type') +
+        ',' +
+        edge.target.getAttribute('type')
+      const endsInv =
+        edge.target.getAttribute('type') +
+        ',' +
+        edge.source.getAttribute('type')
+      for (const end in edgeTypes) {
+        if (ends === end || endsInv === end || ends.includes(end)) {
+          console.log('set type:', edgeTypes[end])
+          edge.setAttribute('type', edgeTypes[end])
+        }
+      }
+    },
+
     entityArguments(cell) {
       const cellType = cell.getAttribute('type')
-      const ident = this.getEntityId(cell.id)
-      const payload = { ident }
+      let payload = {}
       if (cell.edge) {
+        const ident = cell.source.id + 'to' + cell.target.id
+        payload = { ident }
         if (cellType === 'sequence') {
-          payload.fromActivity = this.getEntityId(cell.source.id)
-          payload.toActivity = this.getEntityId(cell.target.id)
+          payload.fromActivity = {
+            id: this.getEntityId(cell.source.id)
+          }
+          payload.toActivity = {
+            id: this.getEntityId(cell.target.id)
+          }
         } else if (cellType === 'artifactcon') {
           const artifactId =
             cell.source.getAttribute('type') === 'artifact'
@@ -246,6 +276,14 @@ export default {
                 }
               }
             }
+          }
+        }
+      } else if (!['reqagent', 'reqworkgroup'].includes(cellType)) {
+        const ident = prompt(`Type ${cellType}'s ident`)
+        payload = {
+          ident,
+          processModel: {
+            id: this.processModelId
           }
         }
       }
@@ -404,55 +442,23 @@ export default {
 
       editor.graph.addListener(mx.mxEvent.ADD_CELLS, (_, evt) => {
         const cell = evt.getProperty('cells')[0]
-        console.log(cell)
-        const cellType = cell.value.nodeName
-        console.log(cellType, endpoints[cellType])
-        let ident, processModel
-        if (!cell.edge) {
-          if (!['ReqAgent', 'ReqWorkGroup'].includes(cellType)) {
-            ident = prompt("Type activity's ident")
-            processModel = {
-              id: this.processModelId
-            }
-          }
-          this.$axios
-            .post(`/api/${endpoints[cellType]}`, {
-              ...maybe('ident', ident),
-              ...maybe('theProcessModel', processModel)
-            })
-            .then(async ({ data }) => {
-              console.log(await data)
-              this.setCellEntity(cell, await data.id)
-              await this.getCoordinateResponse(cell)
-            })
-            .catch(err => {
-              this.handle(err)
-              editor.graph.removeCells([cell], false)
-            })
-        } else {
-          const fromActivityId = this.getEntityId(cell.source.id)
-          const toActivityId = this.getEntityId(cell.target.id)
-          ident = fromActivityId + 'to' + toActivityId
-          console.log('passed')
-          this.$axios
-            .post('/api/sequences', {
-              ident,
-              fromActivity: {
-                id: fromActivityId
-              },
-              toActivity: {
-                id: toActivityId
-              }
-            })
-            .then(({ data }) => {
-              console.log(data)
-              this.setCellEntity(cell, data.id)
-            })
-            .catch(err => {
-              this.handle(err)
-              editor.graph.removeCells([cell], true)
-            })
+        if (cell.edge) {
+          console.log('add cell')
+          this.setEdgeType(cell)
         }
+        const cellType = cell.getAttribute('type')
+        console.log(cellType, endpoints[cellType])
+        this.$axios
+          .post(`/api/${endpoints[cellType]}`, this.entityArguments(cell))
+          .then(async ({ data }) => {
+            console.log(await data)
+            this.setCellEntity(cell, await data.id)
+            !cell.edge && (await this.getCoordinateResponse(cell))
+          })
+          .catch(err => {
+            this.handle(err)
+            editor.graph.removeCells([cell], false)
+          })
       })
 
       editor.graph.addListener(mx.mxEvent.MOVE_CELLS, (sender, evt) => {
