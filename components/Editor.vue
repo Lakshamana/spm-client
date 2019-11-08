@@ -42,7 +42,7 @@ const endpoints = {
   reqworkgroup: 'req-work-groups',
   artifact: 'artifacts',
   joincon: 'join-cons',
-  artifactcon: 'artifactcons',
+  artifactcon: 'artifact-cons',
   sequence: 'sequences',
   branchcon: 'branch-cons'
 }
@@ -52,7 +52,8 @@ const edgeTypes = {
   'decomposed,decomposed': 'sequence',
   'normal,decomposed': 'sequence',
   artifact: 'artifactcon',
-  multipleConnection: 'connector'
+  joincon: 'connector',
+  branchcon: 'connector'
 }
 
 const genericTypes = {
@@ -64,25 +65,25 @@ const genericTypes = {
 const args = {
   sequence: ['ident', 'fromActivity', 'toActivity'],
   artifactcon: ['ident', 'theArtifact', 'toActivities', 'fromActivities'],
-  normal: ['ident'],
-  decomposed: ['ident'],
-  reqagent: [],
-  reqworkgroup: [],
+  normal: ['ident', ['toJoinCons', 'multipleConnection', 'list']],
+  decomposed: ['ident', ['toJoinCons', 'multipleConnection', 'list']],
+  reqagent: ['theNormal'],
+  reqworkgroup: ['theNormal'],
   artifact: ['ident'],
   // Para criação, basta usar ident
   joincon: [
     'ident',
-    ['fromMultipleCons', 'multipleConnection'],
-    ['fromActivities', 'activity'],
-    'toActivity',
-    'toMultipleCon'
+    ['fromMultipleCons', 'multipleConnection', 'list'],
+    ['fromActivities', 'activity', 'list'],
+    ['toActivity', 'activity'],
+    ['toMultipleCon', 'multipleConnection']
   ],
   branchcon: [
     'ident',
-    'fromActivity',
-    'fromMultipleConnection',
-    'toActivities',
-    'toMultipleCons'
+    ['fromActivity', 'activity'],
+    ['fromMultipleConnection', 'multipleConnection'],
+    ['toActivities', 'activity', 'list'],
+    ['toMultipleCons', 'multipleConnection', 'list']
   ]
 }
 
@@ -234,8 +235,8 @@ export default {
       let payload = {}
       if (cell.edge) {
         const ident = cell.source.id + 'to' + cell.target.id
-        payload = { ident }
         if (cellType === 'sequence') {
+          payload = { ident }
           payload.fromActivity = {
             id: this.getEntityId(cell.source.id)
           }
@@ -243,6 +244,7 @@ export default {
             id: this.getEntityId(cell.target.id)
           }
         } else if (cellType === 'artifactcon') {
+          payload = { ident }
           const artifactId =
             cell.source.getAttribute('type') === 'artifact'
               ? cell.source.id
@@ -257,32 +259,48 @@ export default {
             }
           }
         } else if (cellType === 'connector') {
-          for (const sideNode of ['source', 'target']) {
+          console.log('celltype:', cellType)
+          for (const sideNode of ['source']) {
+            console.log('sideNode:', sideNode)
             const type = cell[sideNode].getAttribute('type')
             const params = args[type]
+            console.log(params)
             const prefix = sideNode === 'source' ? 'to' : 'from'
             const other = sideNode === 'source' ? 'target' : 'source'
             const otherType = cell[other].getAttribute('type')
             for (const p of params) {
-              if (p === 'ident') continue
+              console.log('param:', p)
+              if (p === 'ident') {
+                payload.ident = cell[sideNode].getAttribute('label')
+                continue
+              }
               // param p will be an array if it is not the ident
-              const [argname, genericTypeKey] = p
+              const [argname, genericTypeKey, isList] = p
+              console.log(
+                'argname=' + argname + '; genericTypeKey=' + genericTypeKey
+              )
               if (
                 genericTypes[genericTypeKey].includes(otherType) &&
                 argname.startsWith(prefix)
               ) {
-                payload[argname] = {
-                  id: cell[other].id
+                const sendObj = {
+                  id: this.getEntityId(cell[other].id)
                 }
+                payload[argname] = isList ? [sendObj] : sendObj
               }
             }
           }
         }
       } else if (!['reqagent', 'reqworkgroup'].includes(cellType)) {
         const ident = prompt(`Type ${cellType}'s ident`)
-        payload = {
-          ident,
-          processModel: {
+        cell.setAttribute('label', ident)
+        console.log('vertex type:', cellType)
+        payload = { ident }
+        if (
+          cellType !== 'artifact' &&
+          !genericTypes.multipleConnection.includes(cellType)
+        ) {
+          payload.theProcessModel = {
             id: this.processModelId
           }
         }
@@ -295,7 +313,7 @@ export default {
     },
 
     getEntityId(cellId) {
-      return cellId.split('#')[1]
+      return +cellId.split('#')[1]
     },
 
     setXmlValue(xml) {
@@ -427,7 +445,7 @@ export default {
 
       editor.graph.connectionHandler.addListener(
         mx.mxEvent.CONNECT,
-        (sender, evt) => {
+        (_, evt) => {
           const edge = evt.getProperty('cell')
           try {
             this.validateConnection(edge)
@@ -436,29 +454,48 @@ export default {
             editor.graph.removeCells([edge], true)
           }
           editor.graph.validateGraph()
-          mx.mxEvent.consume(evt)
+          this.setEdgeType(edge)
+          const edgeType = edge.getAttribute('type')
+          const endpoint =
+            edgeType === 'connector'
+              ? endpoints[edge.source.getAttribute('type')]
+              : endpoints[edgeType]
+          const params = {
+            id: this.getEntityId(edge.source.id),
+            ...this.entityArguments(edge)
+          }
+          console.log(params)
+          this.$axios
+            .put(`/api/${endpoint}`, params)
+            .then(async ({ data }) => {
+              console.log(await data)
+              this.setCellEntity(edge, await data.id)
+            })
+            .catch(err => {
+              this.handle(err)
+              editor.graph.removeCells([edge], false)
+            })
+            .finally(() => mx.mxEvent.consume(evt))
         }
       )
 
-      editor.graph.addListener(mx.mxEvent.ADD_CELLS, (_, evt) => {
-        const cell = evt.getProperty('cells')[0]
-        if (cell.edge) {
-          console.log('add cell')
-          this.setEdgeType(cell)
-        }
-        const cellType = cell.getAttribute('type')
-        console.log(cellType, endpoints[cellType])
+      editor.addListener(mx.mxEvent.BEFORE_ADD_VERTEX, (_, evt) => {
+        const vtx = evt.getProperty('vertex')
+        console.log(vtx)
+        const vtxType = vtx.getAttribute('type')
+        console.log(vtxType, endpoints[vtxType])
         this.$axios
-          .post(`/api/${endpoints[cellType]}`, this.entityArguments(cell))
+          .post(`/api/${endpoints[vtxType]}`, this.entityArguments(vtx))
           .then(async ({ data }) => {
             console.log(await data)
-            this.setCellEntity(cell, await data.id)
-            !cell.edge && (await this.getCoordinateResponse(cell))
+            this.setCellEntity(vtx, await data.id)
+            await this.getCoordinateResponse(vtx)
           })
           .catch(err => {
             this.handle(err)
-            editor.graph.removeCells([cell], false)
+            editor.graph.removeCells([vtx], false)
           })
+          .finally(() => mx.mxEvent.consume(evt))
       })
 
       editor.graph.addListener(mx.mxEvent.MOVE_CELLS, (sender, evt) => {
