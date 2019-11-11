@@ -92,6 +92,7 @@ export default {
               'editor/setCurrentProcessModel',
               data.theProcessModel.id
             )
+            this.$store.commit('editor/setCurrentProcess', data.id)
           }
           if (this.$route.path === '/list') {
             location.reload()

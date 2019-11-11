@@ -30,7 +30,10 @@
 
 <script>
 import mxGraphFactory from 'mxgraph-lakshamana'
+import { mapState } from 'vuex'
 import { errorHandler } from './mixins/errorHandler'
+import { setEdgeType } from '@/util/utils'
+import { genericTypes } from '@/service/helpers'
 import { getXml } from '@/util/xml'
 
 const mx = new mxGraphFactory()
@@ -92,6 +95,12 @@ export default {
     }
   },
 
+  computed: {
+    ...mapState({
+      processId: state => state.editor.currentProcess
+    })
+  },
+
   watch: {
     processModelId(val) {
       console.log('New Value:', val)
@@ -150,15 +159,19 @@ export default {
       console.log(cells)
     },
 
-    async getCoordinateResponse(cell) {
-      const { x, y } = cell.geometry
-      await this.$axios.post('/api/easy-modeling', {
-        processId: this.processModelId,
-        referedObjectId: this.getEntityId(cell.id),
-        nodeType: cell.value.nodeName,
-        x,
-        y
-      })
+    onConnect(params) {
+      const { cell, type, method, onfinally } = params
+      console.log('onConnect:', type, method)
+      this.$service[type][method](cell, this.processModelId)
+        .then(async ({ data }) => {
+          console.log(await data)
+          this.setCellEntity(cell, await data.id)
+        })
+        .catch(err => {
+          this.handle(err)
+          this.editor.graph.removeCells([cell], false)
+        })
+        .finally(onfinally)
     },
 
     setXmlValue(xml) {
@@ -299,28 +312,33 @@ export default {
             editor.graph.removeCells([edge], true)
           }
           editor.graph.validateGraph()
-          this.setEdgeType(edge)
+          setEdgeType(edge)
           const edgeType = edge.getAttribute('type')
-          const endpoint =
-            edgeType === 'connector'
-              ? endpoints[edge.source.getAttribute('type')]
-              : endpoints[edgeType]
-          const params = {
-            id: this.getEntityId(edge.source.id),
-            ...this.entityArguments(edge)
+          const finish = () => mx.mxEvent.consume(evt)
+          if (edgeType === 'connector') {
+            for (const sideNode of ['source', 'target']) {
+              const type = edge[sideNode].getAttribute('type')
+              if (
+                !genericTypes.multipleConnection.includes(type) &&
+                !genericTypes.reqpeople.includes(type)
+              )
+                continue
+              else {
+                this.onConnect({
+                  cell: edge[sideNode],
+                  type,
+                  method: 'update',
+                  onfinally: finish
+                })
+              }
+            }
+          } else {
+            this.onConnect({
+              cell: edge,
+              method: 'create',
+              onfinally: finish
+            })
           }
-          console.log(params)
-          this.$axios
-            .put(`/api/${endpoint}`, params)
-            .then(async ({ data }) => {
-              console.log(await data)
-              this.setCellEntity(edge, await data.id)
-            })
-            .catch(err => {
-              this.handle(err)
-              editor.graph.removeCells([edge], false)
-            })
-            .finally(() => mx.mxEvent.consume(evt))
         }
       )
 
@@ -328,13 +346,17 @@ export default {
         const vtx = evt.getProperty('vertex')
         console.log(vtx)
         const vtxType = vtx.getAttribute('type')
-        console.log(vtxType, endpoints[vtxType])
-        this.$axios
-          .post(`/api/${endpoints[vtxType]}`, this.entityArguments(vtx))
+        let ident
+        if (!['reqagent', 'reqworkgroup'].includes(vtxType)) {
+          ident = prompt(`Type in ${vtx.value.nodeName}'s ident:`)
+          vtx.setAttribute('label', ident)
+        }
+        this.$service[vtxType]
+          .create(vtx, this.processModelId)
           .then(async ({ data }) => {
             console.log(await data)
             this.setCellEntity(vtx, await data.id)
-            await this.getCoordinateResponse(vtx)
+            await this.$service.coordinates.send(vtx, this.processId)
           })
           .catch(err => {
             this.handle(err)
@@ -343,8 +365,9 @@ export default {
           .finally(() => mx.mxEvent.consume(evt))
       })
 
-      editor.graph.addListener(mx.mxEvent.MOVE_CELLS, (sender, evt) => {
+      editor.graph.addListener(mx.mxEvent.MOVE_CELLS, (_, evt) => {
         const cell = editor.graph.getSelectionCell()
+        if (cell.edge) return
         let { x, y } = editor.graph.view.getState(cell).origin
         const dx = evt.getProperty('dx')
         const dy = evt.getProperty('dy')
@@ -356,6 +379,9 @@ export default {
         if (y < 0) {
           cell.geometry.y = 0
         }
+        this.$service.coordinates
+          .send(cell, this.processId)
+          .then(({ data }) => console.log(data))
         mx.mxEvent.consume(evt)
       })
 

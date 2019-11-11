@@ -45,3 +45,18 @@ export function setEdgeType(edge) {
     }
   }
 }
+
+export function createIdent(edge) {
+  return edge.source.id + 'to' + edge.target.id
+}
+
+export function relatedActivities(edge) {
+  return {
+    fromActivity: {
+      id: getEntityId(edge.source.id)
+    },
+    toActivity: {
+      id: getEntityId(edge.target.id)
+    }
+  }
+}

@@ -29,7 +29,7 @@ module.exports = {
   /*
    ** Plugins to load before mounting the App
    */
-  plugins: ['~/plugins/window.js'],
+  plugins: ['~/plugins/window.js', '~/plugins/service.js'],
   /*
    ** Nuxt.js dev-modules
    */

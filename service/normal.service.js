@@ -1,8 +1,11 @@
 export function makeNormalServices(axios) {
   return {
-    create(cell) {
+    create(cell, pmId) {
       const ident = cell.getAttribute('label')
-      return axios.post('/api/normals', { ident })
+      const theProcessModel = {
+        id: pmId
+      }
+      return axios.post('/api/normals', { ident, theProcessModel })
     }
   }
 }

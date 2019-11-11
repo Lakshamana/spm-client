@@ -8,6 +8,7 @@ import { makeJoinConServices } from '@/service/joincon.service'
 import { makeBranchConServices } from '@/service/branchcon.service'
 import { makeSequenceServices } from '@/service/sequence.service'
 import { makeFeedbackServices } from '@/service/feedback.service'
+import { makeCoordinatesServices } from '@/service/coordinates.service'
 
 export function makeServices(axios) {
   return {
@@ -20,6 +21,7 @@ export function makeServices(axios) {
     joincon: makeJoinConServices(axios),
     branchcon: makeBranchConServices(axios),
     sequence: makeSequenceServices(axios),
-    feedback: makeFeedbackServices(axios)
+    feedback: makeFeedbackServices(axios),
+    coordinates: makeCoordinatesServices(axios)
   }
 }

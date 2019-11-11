@@ -1,11 +1,14 @@
 import { genericTypes } from './helpers'
 import { getEntityId, maybe } from '@/util/utils'
 
-export function makeJoinConServices(axios) {
+export function makeBranchConServices(axios) {
   return {
-    create(cell) {
+    create(cell, pmId) {
       const ident = cell.getAttribute('label')
-      return axios.post('/api/branch-cons', { ident })
+      const theProcessModel = {
+        id: pmId
+      }
+      return axios.post('/api/branch-cons', { ident, theProcessModel })
     },
 
     update(cell) {
@@ -35,7 +38,8 @@ export function makeJoinConServices(axios) {
           })
         }
       }
-      return axios.post('/api/branch-cons', {
+      return axios.put('/api/branch-cons', {
+        id: getEntityId(cell.id),
         ...maybe('toActivities', toActivities.length > 0 && toActivities),
         ...maybe('toMultipleCons', toMultipleCons.length > 0 && toMultipleCons),
         ...maybe('fromActivity', Object.keys(fromActivity) > 0 && fromActivity),

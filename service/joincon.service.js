@@ -3,9 +3,12 @@ import { getEntityId, maybe } from '@/util/utils'
 
 export function makeJoinConServices(axios) {
   return {
-    create(cell) {
+    create(cell, pmId) {
       const ident = cell.getAttribute('label')
-      return axios.post('/api/join-cons', { ident })
+      const theProcessModel = {
+        id: pmId
+      }
+      return axios.post('/api/join-cons', { ident, theProcessModel })
     },
 
     update(cell) {
@@ -35,7 +38,8 @@ export function makeJoinConServices(axios) {
           })
         }
       }
-      return axios.post('/api/join-cons', {
+      return axios.put('/api/join-cons', {
+        id: getEntityId(cell.id),
         ...maybe('fromActivities', fromActivities.length > 0 && fromActivities),
         ...maybe(
           'fromMultipleCons',

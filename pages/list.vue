@@ -90,6 +90,7 @@ export default {
             'editor/setCurrentProcessModel',
             data.theProcessModel.id
           )
+          this.$store.commit('editor/setCurrentProcess', data.id)
           this.$router.push('/')
         })
         .catch(this.handle)
