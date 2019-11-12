@@ -11,7 +11,7 @@ export function makeReqWorkGroupServices(axios) {
       const theNormal = {
         id: getEntityId(cell.edges[0].target.id)
       }
-      return axios.put('/api/req-agents', { id, theNormal })
+      return axios.put('/api/req-work-groups', { id, theNormal })
     }
   }
 }

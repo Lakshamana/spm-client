@@ -1,16 +1,18 @@
+import { setCellEntity } from '~/util/utils'
+
 export const vertexConnection = {
   methods: {
     onConnect(params) {
-      const { edge, type, method, onfinally } = params
-      console.log('onConnect:', type, method)
-      this.$service[type][method](edge, this.processModelId)
+      const { cell, type, method, onfinally } = params
+      console.log('onConnect:', type, method, cell)
+      this.$service[type][method](cell, this.processModelId)
         .then(async ({ data }) => {
           console.log(await data)
-          this.setCellEntity(edge, await data.id)
+          setCellEntity(cell, await data.id)
         })
         .catch(err => {
           this.handle(err)
-          this.editor.graph.removeCells([edge], false)
+          this.editor.graph.removeCells([cell], false)
         })
         .finally(onfinally)
     }

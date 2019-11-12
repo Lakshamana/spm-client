@@ -1,4 +1,4 @@
-import { getEntityId, maybe } from '@/util/utils'
+import { getEntityId, maybe, createIdent } from '@/util/utils'
 
 function artifactConArguments(edge) {
   let theArtifact
@@ -30,21 +30,24 @@ function artifactConArguments(edge) {
 
 export function makeArtifactConServices(axios) {
   return {
-    create(cell, pmId) {
-      const ident = cell.getAttribute('label')
+    create(edge, pmId) {
+      const ident = createIdent(edge)
+      console.log(ident)
       const theProcessModel = {
         id: pmId
       }
       return axios.post('/api/artifact-cons', {
         ident,
         theProcessModel,
-        ...artifactConArguments(cell)
+        ...artifactConArguments(edge)
       })
     },
 
     update(edge) {
+      const ident = createIdent(edge)
       return axios.put('/api/artifact-cons', {
         id: getEntityId(edge.id),
+        ident,
         ...artifactConArguments(edge)
       })
     }

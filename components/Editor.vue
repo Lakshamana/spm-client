@@ -32,7 +32,7 @@
 import mxGraphFactory from 'mxgraph-lakshamana'
 import { mapState } from 'vuex'
 import { errorHandler } from './mixins/errorHandler'
-import { setEdgeType } from '@/util/utils'
+import { setEdgeType, setCellEntity } from '@/util/utils'
 import { genericTypes } from '@/service/helpers'
 import { getXml } from '@/util/xml'
 
@@ -319,22 +319,21 @@ export default {
             for (const sideNode of ['source', 'target']) {
               const type = edge[sideNode].getAttribute('type')
               if (
-                !genericTypes.multipleConnection.includes(type) &&
-                !genericTypes.reqpeople.includes(type)
+                genericTypes.multipleConnection.includes(type) ||
+                genericTypes.reqpeople.includes(type)
               )
-                continue
-              else {
                 this.onConnect({
                   cell: edge[sideNode],
                   type,
                   method: 'update',
                   onfinally: finish
                 })
-              }
+              else continue
             }
           } else {
             this.onConnect({
               cell: edge,
+              type: edgeType,
               method: 'create',
               onfinally: finish
             })
@@ -344,7 +343,6 @@ export default {
 
       editor.addListener(mx.mxEvent.BEFORE_ADD_VERTEX, (_, evt) => {
         const vtx = evt.getProperty('vertex')
-        console.log(vtx)
         const vtxType = vtx.getAttribute('type')
         let ident
         if (!['reqagent', 'reqworkgroup'].includes(vtxType)) {
@@ -355,7 +353,8 @@ export default {
           .create(vtx, this.processModelId)
           .then(async ({ data }) => {
             console.log(await data)
-            this.setCellEntity(vtx, await data.id)
+            setCellEntity(vtx, await data.id)
+            console.log(vtx)
             await this.$service.coordinates.send(vtx, this.processId)
           })
           .catch(err => {
