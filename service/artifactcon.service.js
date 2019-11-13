@@ -1,54 +1,47 @@
-import { getEntityId, maybe, createIdent } from '@/util/utils'
+import { getEntityId, maybe } from '@/util/utils'
 
-function artifactConArguments(edge) {
-  let theArtifact
-  const useList = { toActivities: [], fromActivities: [] }
-  for (const sideNode of ['source', 'target']) {
-    if (edge[sideNode].getAttribute('type') === 'artifact') {
-      theArtifact = {
-        id: getEntityId(edge[sideNode].id)
-      }
+function artifactConArguments(cell) {
+  const toActivities = []
+  const fromActivities = []
+  for (const e of cell.edges) {
+    // If i'm not the source, fetch sources -> (I'm the target)
+    if (e.source.id !== cell.id) {
+      fromActivities.push({
+        id: getEntityId(e.source.id)
+      })
+      // Otherwise
     } else {
-      const side = sideNode === 'source' ? 'from' : 'to'
-      useList[side + 'Activities'].push({
-        id: getEntityId(edge[sideNode].id)
+      toActivities.push({
+        id: getEntityId(e.target.id)
       })
     }
   }
   return {
-    theArtifact,
-    ...maybe(
-      'fromActivities',
-      useList.fromActivities.length > 0 && useList.fromActivities
-    ),
-    ...maybe(
-      'toActivities',
-      useList.toActivities.length > 0 && useList.toActivities
-    )
+    ...maybe('fromActivities', fromActivities.length > 0 && fromActivities),
+    ...maybe('toActivities', toActivities.length > 0 && toActivities)
   }
 }
 
 export function makeArtifactConServices(axios) {
   return {
-    create(edge, pmId) {
-      const ident = createIdent(edge)
+    create(cell, pmId) {
+      const ident = cell.getAttribute('label')
       console.log(ident)
       const theProcessModel = {
         id: pmId
       }
       return axios.post('/api/artifact-cons', {
         ident,
-        theProcessModel,
-        ...artifactConArguments(edge)
+        theProcessModel
       })
     },
 
-    update(edge) {
-      const ident = createIdent(edge)
+    update(cell) {
+      const ident = cell.getAttribute('label')
       return axios.put('/api/artifact-cons', {
-        id: getEntityId(edge.id),
+        id: getEntityId(cell.id),
         ident,
-        ...artifactConArguments(edge)
+        ...artifactConArguments(cell)
       })
     }
   }

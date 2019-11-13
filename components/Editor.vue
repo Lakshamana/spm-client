@@ -33,7 +33,7 @@ import mxGraphFactory from 'mxgraph-lakshamana'
 import { mapState } from 'vuex'
 import { errorHandler } from './mixins/errorHandler'
 import { setEdgeType, setCellEntity } from '@/util/utils'
-import { genericTypes } from '@/service/helpers'
+import { edgeTypes } from '@/service/helpers'
 import { getXml } from '@/util/xml'
 
 const mx = new mxGraphFactory()
@@ -55,7 +55,13 @@ export default {
       editor: undefined,
       validatees: {
         normal: {
-          targets: ['normal', 'decomposed', 'artifact', 'joincon', 'branchcon'],
+          targets: [
+            'normal',
+            'decomposed',
+            'artifactcon',
+            'joincon',
+            'branchcon'
+          ],
           constraints: {
             outgoingTo: {
               normal: 1,
@@ -68,7 +74,13 @@ export default {
           }
         },
         decomposed: {
-          targets: ['normal', 'decomposed', 'artifact', 'joincon', 'branchcon']
+          targets: [
+            'normal',
+            'decomposed',
+            'artifactcon',
+            'joincon',
+            'branchcon'
+          ]
         },
         agent: {
           targets: ['normal', 'decomposed']
@@ -76,7 +88,7 @@ export default {
         workgroup: {
           targets: ['normal', 'decomposed']
         },
-        artifact: {
+        artifactcon: {
           targets: ['normal', 'decomposed']
         },
         join: {
@@ -226,23 +238,23 @@ export default {
           editor.graph.multiplicities.push(
             new mx.mxMultiplicity(
               true,
-              'join',
+              'joincon',
               null,
               null,
               0,
               1,
-              ['normal', 'decomposed', 'join', 'branch'],
+              ['normal', 'decomposed', 'joincon', 'branchcon'],
               'Join must have at max 1 source node!',
               null
             ),
             new mx.mxMultiplicity(
               false,
-              'branch',
+              'branchcon',
               null,
               null,
               0,
               1,
-              ['normal', 'decomposed', 'join', 'branch'],
+              ['normal', 'decomposed', 'joincon', 'branchcon'],
               'Branch must have at max 1 target node!',
               null
             )
@@ -318,10 +330,7 @@ export default {
           if (edgeType === 'connector') {
             for (const sideNode of ['source', 'target']) {
               const type = edge[sideNode].getAttribute('type')
-              if (
-                genericTypes.multipleConnection.includes(type) ||
-                genericTypes.reqpeople.includes(type)
-              )
+              if (edgeTypes[type] === 'connector')
                 this.onConnect({
                   cell: edge[sideNode],
                   type,

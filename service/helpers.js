@@ -9,7 +9,7 @@ export const edgeTypes = {
   'normal,normal': 'sequence',
   'decomposed,decomposed': 'sequence',
   'normal,decomposed': 'sequence',
-  artifact: 'artifactcon',
+  artifactcon: 'connector',
   joincon: 'connector',
   branchcon: 'connector',
   reqagent: 'connector',

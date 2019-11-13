@@ -55,12 +55,12 @@ const xml = `<mxEditor defaultGroup="group" defaultEdge="connector">
       </mxCell>
     </ReqWorkGroup>
   </add>
-  <add as="artifact">
-    <Artifact type="artifact" label="">
+  <add as="artifactcon">
+    <ArtifactCon type="artifactcon" label="">
       <mxCell vertex="1" style="artifact_empty">
         <mxGeometry as="geometry" width="50" height="50" />
       </mxCell>
-    </Artifact>
+    </ArtifactCon>
   </add>
   <add as="join">
     <JoinCon type="joincon" label="">
@@ -349,7 +349,7 @@ const xml = `<mxEditor defaultGroup="group" defaultEdge="connector">
   <add as="Decomposed" template="decomposed" icon="${IMG_PATH}/spm/decomposed.png" />
   <add as="ReqAgent" template="reqagent" icon="${IMG_PATH}/spm/agent.png" />
   <add as="ReqWorkGroup" template="reqworkgroup" icon="${IMG_PATH}/spm/group.png" />
-  <add as="Artifact" template="artifact" icon="${IMG_PATH}/spm/artifact_full.png" />
+  <add as="ArtifactCon" template="artifactcon" icon="${IMG_PATH}/spm/artifact_full.png" />
   <add as="JoinCon" template="join" icon="${IMG_PATH}/spm/join.png" />
   <add as="BranchCon" template="branch" icon="${IMG_PATH}/spm/branch.png" />
 </mxDefaultToolbar>
