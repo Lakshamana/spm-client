@@ -24,7 +24,7 @@ export function makeJoinConServices(axios) {
             ? fromActivities
             : fromMultipleCons
           useList.push({
-            id: getEntityId(e.source)
+            id: getEntityId(e.source.id)
           })
           // If current cell is the source, then take the target on
         } else {
@@ -34,7 +34,7 @@ export function makeJoinConServices(axios) {
             ? toActivity
             : toMultipleCon
           Object.assign(to, {
-            id: getEntityId(e.target)
+            id: getEntityId(e.target.id)
           })
         }
       }

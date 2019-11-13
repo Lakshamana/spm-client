@@ -24,7 +24,7 @@ export function makeBranchConServices(axios) {
             ? toActivities
             : toMultipleCons
           useList.push({
-            id: getEntityId(e.target)
+            id: getEntityId(e.target.id)
           })
           // If current cell is the target, then take the source on
         } else {
@@ -34,7 +34,7 @@ export function makeBranchConServices(axios) {
             ? fromActivity
             : fromMultipleConnection
           Object.assign(from, {
-            id: getEntityId(e.source)
+            id: getEntityId(e.source.id)
           })
         }
       }
