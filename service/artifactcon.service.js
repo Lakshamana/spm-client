@@ -14,7 +14,7 @@ function artifactConArguments(cell) {
       // Otherwise
     } else {
       const trgType = e.target.getAttribute('type')
-      if (trgType === 'activity') {
+      if (genericTypes.activity.includes(trgType)) {
         toActivities.push({
           id: getEntityId(e.target.id)
         })
