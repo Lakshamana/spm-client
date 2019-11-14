@@ -1,8 +1,10 @@
+import { genericTypes } from './helpers'
 import { getEntityId, maybe } from '@/util/utils'
 
 function artifactConArguments(cell) {
   const toActivities = []
   const fromActivities = []
+  const toMultipleCons = []
   for (const e of cell.edges) {
     // If i'm not the source, fetch sources -> (I'm the target)
     if (e.source.id !== cell.id) {
@@ -11,14 +13,22 @@ function artifactConArguments(cell) {
       })
       // Otherwise
     } else {
-      toActivities.push({
-        id: getEntityId(e.target.id)
-      })
+      const trgType = e.target.getAttribute('type')
+      if (trgType === 'activity') {
+        toActivities.push({
+          id: getEntityId(e.target.id)
+        })
+      } else if (genericTypes.multipleConnection.includes(trgType)) {
+        toMultipleCons.push({
+          id: getEntityId(e.target.id)
+        })
+      }
     }
   }
   return {
     ...maybe('fromActivities', fromActivities.length > 0 && fromActivities),
-    ...maybe('toActivities', toActivities.length > 0 && toActivities)
+    ...maybe('toActivities', toActivities.length > 0 && toActivities),
+    ...maybe('toMultipleCons', toMultipleCons.length > 0 && toMultipleCons)
   }
 }
 
