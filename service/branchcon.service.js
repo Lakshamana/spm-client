@@ -38,14 +38,20 @@ export function makeBranchConServices(axios) {
           })
         }
       }
+      const ident = cell.getAttribute('label')
       return axios.put('/api/branch-cons', {
         id: getEntityId(cell.id),
+        ident,
         ...maybe('toActivities', toActivities.length > 0 && toActivities),
         ...maybe('toMultipleCons', toMultipleCons.length > 0 && toMultipleCons),
-        ...maybe('fromActivity', Object.keys(fromActivity) > 0 && fromActivity),
+        ...maybe(
+          'fromActivity',
+          Object.keys(fromActivity).length > 0 && fromActivity
+        ),
         ...maybe(
           'fromMultipleConnection',
-          Object.keys(fromMultipleConnection) > 0 && fromMultipleConnection
+          Object.keys(fromMultipleConnection).length > 0 &&
+            fromMultipleConnection
         )
       })
     }
