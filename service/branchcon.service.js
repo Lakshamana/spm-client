@@ -8,7 +8,7 @@ export function makeBranchConServices(axios) {
       const theProcessModel = {
         id: pmId
       }
-      return axios.post('/api/branch-cons', { ident, theProcessModel })
+      return axios.post('/api/branch-and-cons', { ident, theProcessModel })
     },
 
     update(cell) {
@@ -39,7 +39,7 @@ export function makeBranchConServices(axios) {
         }
       }
       const ident = cell.getAttribute('label')
-      return axios.put('/api/branch-cons', {
+      return axios.put('/api/branch-and-cons', {
         id: getEntityId(cell.id),
         ident,
         ...maybe('toActivities', toActivities.length > 0 && toActivities),
