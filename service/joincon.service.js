@@ -38,17 +38,22 @@ export function makeJoinConServices(axios) {
           })
         }
       }
+      const ident = cell.getAttribute('label')
       return axios.put('/api/join-cons', {
         id: getEntityId(cell.id),
+        ident,
         ...maybe('fromActivities', fromActivities.length > 0 && fromActivities),
         ...maybe(
           'fromMultipleCons',
           fromMultipleCons.length > 0 && fromMultipleCons
         ),
-        ...maybe('toActivity', Object.keys(toActivity) > 0 && toActivity),
+        ...maybe(
+          'toActivity',
+          Object.keys(toActivity).length > 0 && toActivity
+        ),
         ...maybe(
           'toMultipleCon',
-          Object.keys(toMultipleCon) > 0 && toMultipleCon
+          Object.keys(toMultipleCon).length > 0 && toMultipleCon
         )
       })
     }
