@@ -19,7 +19,7 @@ export function makeBranchConServices(axios) {
       for (const e of cell.edges) {
         // Fetch targets
         if (e.target.id !== cell.id) {
-          const trgType = e.source.getAttribute('type')
+          const trgType = e.target.getAttribute('type')
           const useList = genericTypes.activity.includes(trgType)
             ? toActivities
             : toMultipleCons
@@ -29,7 +29,7 @@ export function makeBranchConServices(axios) {
           // If current cell is the target, then take the source on
         } else {
           const from = genericTypes.activity.includes(
-            e.target.getAttribute('type')
+            e.source.getAttribute('type')
           )
             ? fromActivity
             : fromMultipleConnection
