@@ -1,6 +1,6 @@
 export const genericTypes = {
   activity: ['normal', 'decomposed'],
-  multipleConnection: ['joincon', 'branchcon'],
+  multipleConnection: ['joincon', 'branchandcon'],
   simpleConnection: ['sequence', 'feedback'],
   reqpeople: ['reqagent', 'reqworkgroup']
 }
@@ -11,7 +11,7 @@ export const edgeTypes = {
   'normal,decomposed': 'sequence',
   artifactcon: 'connector',
   joincon: 'connector',
-  branchcon: 'connector',
+  branchandcon: 'connector',
   reqagent: 'connector',
   reqworkgroup: 'connector'
 }

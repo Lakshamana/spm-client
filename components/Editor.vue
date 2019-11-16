@@ -60,7 +60,7 @@ export default {
             'decomposed',
             'artifactcon',
             'joincon',
-            'branchcon'
+            'branchandcon'
           ],
           constraints: {
             outgoingTo: {
@@ -79,7 +79,7 @@ export default {
             'decomposed',
             'artifactcon',
             'joincon',
-            'branchcon'
+            'branchandcon'
           ]
         },
         agent: {
@@ -92,10 +92,10 @@ export default {
           targets: ['normal', 'decomposed']
         },
         join: {
-          targets: ['normal', 'decomposed', 'joincon', 'branchcon']
+          targets: ['normal', 'decomposed', 'joincon', 'branchandcon']
         },
         branch: {
-          targets: ['normal', 'decomposed', 'joincon', 'branchcon']
+          targets: ['normal', 'decomposed', 'joincon', 'branchandcon']
         }
       },
       validators: {
@@ -243,18 +243,18 @@ export default {
               null,
               0,
               1,
-              ['normal', 'decomposed', 'joincon', 'branchcon'],
+              ['normal', 'decomposed', 'joincon', 'branchandcon'],
               'Join must have at max 1 source node!',
               null
             ),
             new mx.mxMultiplicity(
               false,
-              'branchcon',
+              'branchandcon',
               null,
               null,
               0,
               1,
-              ['normal', 'decomposed', 'joincon', 'branchcon'],
+              ['normal', 'decomposed', 'joincon', 'branchandcon'],
               'Branch must have at max 1 target node!',
               null
             )

@@ -1,7 +1,7 @@
 import { genericTypes } from './helpers'
 import { getEntityId, maybe } from '@/util/utils'
 
-export function makeBranchConServices(axios) {
+export function makeBranchANDConServices(axios) {
   return {
     create(cell, pmId) {
       const ident = cell.getAttribute('label')

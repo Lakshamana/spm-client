@@ -5,7 +5,7 @@ import { makeReqAgentServices } from '@/service/reqagent.service'
 import { makeReqWorkGroupServices } from '@/service/reqworkgroup.service'
 import { makeArtifactConServices } from '@/service/artifactcon.service'
 import { makeJoinConServices } from '@/service/joincon.service'
-import { makeBranchConServices } from '@/service/branchcon.service'
+import { makeBranchANDConServices } from '@/service/branchandcon.service'
 import { makeSequenceServices } from '@/service/sequence.service'
 import { makeFeedbackServices } from '@/service/feedback.service'
 import { makeCoordinatesServices } from '@/service/coordinates.service'
@@ -19,7 +19,7 @@ export function makeServices(axios) {
     reqworkgroup: makeReqWorkGroupServices(axios),
     artifactcon: makeArtifactConServices(axios),
     joincon: makeJoinConServices(axios),
-    branchcon: makeBranchConServices(axios),
+    branchandcon: makeBranchANDConServices(axios),
     sequence: makeSequenceServices(axios),
     feedback: makeFeedbackServices(axios),
     coordinates: makeCoordinatesServices(axios)

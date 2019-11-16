@@ -70,11 +70,11 @@ const xml = `<mxEditor defaultGroup="group" defaultEdge="connector">
     </JoinCon>
   </add>
   <add as="branch">
-    <BranchCon type="branchcon" label="">
+    <BranchANDCon type="branchandcon" label="">
       <mxCell vertex="1" style="branch_or_end_end">
         <mxGeometry as="geometry" width="50" height="50" />
       </mxCell>
-    </BranchCon>
+    </BranchANDCon>
   </add>
 </Array>
 <mxGraph as="graph" allowLoops="1" dropEnabled="1">
@@ -351,7 +351,7 @@ const xml = `<mxEditor defaultGroup="group" defaultEdge="connector">
   <add as="ReqWorkGroup" template="reqworkgroup" icon="${IMG_PATH}/spm/group.png" />
   <add as="ArtifactCon" template="artifactcon" icon="${IMG_PATH}/spm/artifact_full.png" />
   <add as="JoinCon" template="join" icon="${IMG_PATH}/spm/join.png" />
-  <add as="BranchCon" template="branch" icon="${IMG_PATH}/spm/branch.png" />
+  <add as="BranchANDCon" template="branch" icon="${IMG_PATH}/spm/branch.png" />
 </mxDefaultToolbar>
 </mxEditor>`
 
