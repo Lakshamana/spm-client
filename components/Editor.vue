@@ -40,9 +40,7 @@ const mx = new mxGraphFactory()
 
 export default {
   name: 'Editor',
-
   mixins: [errorHandler],
-
   props: {
     processModelId: {
       type: Number,
@@ -337,7 +335,6 @@ export default {
                   method: 'update',
                   onfinally: finish
                 })
-              else continue
             }
           } else {
             this.onConnect({

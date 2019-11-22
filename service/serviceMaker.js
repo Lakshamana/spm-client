@@ -1,3 +1,4 @@
+import { makeProcessModelServices } from './processModel.service'
 import { makeNormalServices } from '@/service/normal.service'
 import { makeDecomposedServices } from '@/service/decomposed.service'
 import { makeArtifactServices } from '@/service/artifact.service'
@@ -22,6 +23,7 @@ export function makeServices(axios) {
     branchandcon: makeBranchANDConServices(axios),
     sequence: makeSequenceServices(axios),
     feedback: makeFeedbackServices(axios),
-    coordinates: makeCoordinatesServices(axios)
+    coordinates: makeCoordinatesServices(axios),
+    processModel: makeProcessModelServices(axios)
   }
 }

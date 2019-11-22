@@ -53,6 +53,8 @@
 import { errorHandler } from '@/components/mixins/errorHandler'
 import { removeMatching } from '@/util/utils'
 export default {
+  name: 'List',
+  middleware: 'auth',
   mixins: [errorHandler],
   data() {
     return {

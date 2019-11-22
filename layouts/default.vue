@@ -61,7 +61,6 @@ export default {
   components: {
     Card
   },
-
   mixins: [errorHandler],
 
   data() {
