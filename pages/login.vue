@@ -96,7 +96,8 @@ export default {
             username: this.username,
             token: data.id_token
           })
-          this.$axios.setHeader('Authorization', 'Bearer ' + data.id_token)
+          console.log('Authorization', 'Bearer ' + data.id_token)
+
           const to = this.$route.query.to ? atob(this.$route.query.to) : '/'
           this.$router.push(to)
         })

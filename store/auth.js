@@ -1,7 +1,8 @@
 import { recovery, persist } from '@/front/persistence'
 
 export const state = () => ({
-  token: recovery('user')
+  token: recovery('token'),
+  user: recovery('user')
 })
 
 export const mutations = {
