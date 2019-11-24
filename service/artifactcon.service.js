@@ -53,6 +53,11 @@ export function makeArtifactConServices(axios) {
         ident,
         ...artifactConArguments(cell)
       })
+    },
+
+    delete(cell) {
+      const id = getEntityId(cell)
+      return axios.delete(`/api/artifact-cons/${id}`)
     }
   }
 }

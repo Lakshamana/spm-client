@@ -56,6 +56,11 @@ export function makeJoinConServices(axios) {
           Object.keys(toMultipleCon).length > 0 && toMultipleCon
         )
       })
+    },
+
+    delete(cell) {
+      const id = getEntityId(cell)
+      return axios.delete(`/api/join-cons/${id}`)
     }
   }
 }

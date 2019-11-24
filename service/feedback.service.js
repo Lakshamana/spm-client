@@ -7,7 +7,7 @@ export function makeFeedbackServices(axios) {
       const theProcessModel = {
         id: pmId
       }
-      return axios.post('/api/sequences', {
+      return axios.post('/api/feedbacks', {
         ident,
         theProcessModel,
         ...relatedActivities(edge)
@@ -15,10 +15,15 @@ export function makeFeedbackServices(axios) {
     },
 
     update(edge) {
-      return axios.post('/api/sequences', {
+      return axios.post('/api/feedbacks', {
         id: getEntityId(edge.id),
         ...relatedActivities(edge)
       })
+    },
+
+    delete(cell) {
+      const id = getEntityId(cell)
+      return axios.delete(`/api/feedbacks/${id}`)
     }
   }
 }

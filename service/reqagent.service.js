@@ -13,6 +13,11 @@ export function makeReqAgentServices(axios) {
         id: getEntityId(cell.edges[0].target.id)
       }
       return axios.put('/api/req-agents', { id, theNormal })
+    },
+
+    delete(cell) {
+      const id = getEntityId(cell)
+      return axios.delete(`/api/req-agents/${id}`)
     }
   }
 }

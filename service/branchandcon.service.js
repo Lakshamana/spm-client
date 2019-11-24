@@ -54,6 +54,11 @@ export function makeBranchANDConServices(axios) {
             fromMultipleConnection
         )
       })
+    },
+
+    delete(cell) {
+      const id = getEntityId(cell)
+      return axios.delete(`/api/branch-and-cons/${id}`)
     }
   }
 }

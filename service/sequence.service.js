@@ -19,6 +19,11 @@ export function makeSequenceServices(axios) {
         id: getEntityId(edge.id),
         ...relatedActivities(edge)
       })
+    },
+
+    delete(cell) {
+      const id = getEntityId(cell)
+      return axios.delete(`/api/sequences/${id}`)
     }
   }
 }

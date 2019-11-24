@@ -32,6 +32,7 @@
 import mxGraphFactory from 'mxgraph-lakshamana'
 import { mapState } from 'vuex'
 import { errorHandler } from './mixins/errorHandler'
+import { deleteCells } from './mixins/deleteCells'
 import { setEdgeType, setCellEntity } from '@/util/utils'
 import { edgeTypes } from '@/service/helpers'
 import { getXml } from '@/util/xml'
@@ -40,7 +41,7 @@ const mx = new mxGraphFactory()
 
 export default {
   name: 'Editor',
-  mixins: [errorHandler],
+  mixins: [errorHandler, deleteCells],
   props: {
     processModelId: {
       type: Number,
@@ -388,6 +389,11 @@ export default {
           .send(cell, this.processId)
           .then(({ data }) => console.log(data))
         mx.mxEvent.consume(evt)
+      })
+
+      editor.graph.addListener(mx.mxEvent.REMOVE_CELLS, (_, evt) => {
+        const cells = evt.getProperty('cells')
+        this.onDelete(cells)
       })
 
       const textNode = this.$refs.xml

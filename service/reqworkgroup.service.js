@@ -12,6 +12,11 @@ export function makeReqWorkGroupServices(axios) {
         id: getEntityId(cell.edges[0].target.id)
       }
       return axios.put('/api/req-work-groups', { id, theNormal })
+    },
+
+    delete(cell) {
+      const id = getEntityId(cell)
+      return axios.delete(`/api/req-work-groups/${id}`)
     }
   }
 }

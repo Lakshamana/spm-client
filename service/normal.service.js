@@ -1,3 +1,5 @@
+import { getEntityId } from '~/util/utils'
+
 export function makeNormalServices(axios) {
   return {
     create(cell, pmId) {
@@ -6,6 +8,11 @@ export function makeNormalServices(axios) {
         id: pmId
       }
       return axios.post('/api/normals', { ident, theProcessModel })
+    },
+
+    delete(cell) {
+      const id = getEntityId(cell)
+      return axios.delete(`/api/normals/${id}`)
     }
   }
 }
