@@ -33,7 +33,7 @@ import mxGraphFactory from 'mxgraph-lakshamana'
 import { mapState } from 'vuex'
 import { errorHandler } from './mixins/errorHandler'
 import { setEdgeType, setCellEntity } from '@/util/utils'
-import { edgeTypes } from '@/service/helpers'
+import { edgeTypes, genericTypes } from '@/service/helpers'
 import { getXml } from '@/util/xml'
 
 const mx = new mxGraphFactory()
@@ -233,6 +233,34 @@ export default {
           editor.graph.timerAutoScroll = true
           editor.validation = true
 
+          // Configures automatic expand on mouseover
+          editor.graph.popupMenuHandler.autoExpand = true
+
+          // Installs context menu
+          editor.graph.popupMenuHandler.factoryMethod = (menu, cell, evt) => {
+            if (!cell) return
+
+            const cellType = cell.getAttribute('type')
+            if (genericTypes.activity.includes(cellType)) {
+              menu.addItem('Add Feedback connection', null, () => {
+                console.log('passei aqui')
+                const { connectionHandler } = editor.graph
+                const state = editor.graph.view.getState(cell)
+                const { x, y } = state.origin
+                connectionHandler.start(
+                  state,
+                  x,
+                  y,
+                  connectionHandler.edgeState
+                )
+              })
+              menu.addSeparator()
+            }
+            menu.addItem('Delete', null, function() {
+              alert('Item 2')
+            })
+          }
+
           editor.graph.multiplicities.push(
             new mx.mxMultiplicity(
               true,
@@ -347,7 +375,7 @@ export default {
         }
       )
 
-      editor.addListener(mx.mxEvent.BEFORE_ADD_VERTEX, (_, evt) => {
+      editor.addListener(mx.mxEvent.BEFORE_ADD_VERTEX, async (_, evt) => {
         const vtx = evt.getProperty('vertex')
         const vtxType = vtx.getAttribute('type')
         let ident
@@ -355,19 +383,20 @@ export default {
           ident = prompt(`Type in ${vtx.value.nodeName}'s ident:`)
           vtx.setAttribute('label', ident)
         }
-        this.$service[vtxType]
-          .create(vtx, this.processModelId)
-          .then(async ({ data }) => {
-            console.log(await data)
-            setCellEntity(vtx, await data.id)
-            console.log(vtx)
-            await this.$service.coordinates.send(vtx, this.processId)
-          })
-          .catch(err => {
-            this.handle(err)
-            editor.graph.removeCells([vtx], false)
-          })
-          .finally(() => mx.mxEvent.consume(evt))
+
+        // Requests must be synchronous
+        try {
+          const { data } = await this.$service[vtxType].create(
+            vtx,
+            this.processModelId
+          )
+          setCellEntity(vtx, data.id)
+          await this.$service.coordinates.send(vtx, this.processId)
+        } catch (e) {
+          this.handle(e)
+          editor.graph.removeCells([vtx], false)
+        }
+        mx.mxEvent.consume(evt)
       })
 
       editor.graph.addListener(mx.mxEvent.MOVE_CELLS, (_, evt) => {
