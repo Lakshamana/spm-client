@@ -86,18 +86,19 @@ export default {
       // eslint-disable-next-line no-debugger
       // debugger
       this.$axios
-        .post('/api/auth', {
+        .post('/api/authenticate', {
           username: this.username,
           password: this.password,
           rememberMe: this.rememberMe
         })
-        .then(response => {
-          console.log(response)
+        .then(({ data }) => {
           this.$store.dispatch('auth/login', {
-            token: response.headers.Authorization
+            username: this.username,
+            token: data.id_token
           })
-          // const to = this.$route.query.to ? atob(this.$route.query.to) : '/'
-          // this.$router.push(to)
+          this.$axios.setHeader('Authorization', 'Bearer ' + data.id_token)
+          const to = this.$route.query.to ? atob(this.$route.query.to) : '/'
+          this.$router.push(to)
         })
     }
   }

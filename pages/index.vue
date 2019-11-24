@@ -21,6 +21,7 @@ import Editor from '@/components/Editor'
 
 export default {
   name: 'HomePage',
+  middleware: 'auth',
 
   components: {
     Editor
