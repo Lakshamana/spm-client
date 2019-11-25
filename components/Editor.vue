@@ -159,6 +159,7 @@ export default {
 
   mounted() {
     this.editor = this.createEditor(getXml())
+    this.$service.subscribe()
   },
 
   beforeDestroy() {
@@ -324,7 +325,9 @@ export default {
           editor.graph.validateGraph()
           setEdgeType(edge)
           const edgeType = edge.getAttribute('type')
-          const finish = () => mx.mxEvent.consume(evt)
+          const finish = () => {
+            mx.mxEvent.consume(evt)
+          }
           if (edgeType === 'connector') {
             for (const sideNode of ['source', 'target']) {
               const type = edge[sideNode].getAttribute('type')
