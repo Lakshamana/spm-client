@@ -11,7 +11,7 @@ export function makeDecomposedServices(axios) {
     },
 
     delete(cell) {
-      const id = getEntityId(cell)
+      const id = getEntityId(cell.id)
       return axios.delete(`/api/decomposed/${id}`)
     }
   }

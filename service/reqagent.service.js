@@ -16,7 +16,7 @@ export function makeReqAgentServices(axios) {
     },
 
     delete(cell) {
-      const id = getEntityId(cell)
+      const id = getEntityId(cell.id)
       return axios.delete(`/api/req-agents/${id}`)
     }
   }

@@ -57,7 +57,7 @@ export function makeBranchANDConServices(axios) {
     },
 
     delete(cell) {
-      const id = getEntityId(cell)
+      const id = getEntityId(cell.id)
       return axios.delete(`/api/branch-and-cons/${id}`)
     }
   }

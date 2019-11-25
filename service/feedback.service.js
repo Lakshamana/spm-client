@@ -22,7 +22,7 @@ export function makeFeedbackServices(axios) {
     },
 
     delete(cell) {
-      const id = getEntityId(cell)
+      const id = getEntityId(cell.id)
       return axios.delete(`/api/feedbacks/${id}`)
     }
   }

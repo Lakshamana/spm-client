@@ -59,7 +59,7 @@ export function makeJoinConServices(axios) {
     },
 
     delete(cell) {
-      const id = getEntityId(cell)
+      const id = getEntityId(cell.id)
       return axios.delete(`/api/join-cons/${id}`)
     }
   }

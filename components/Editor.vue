@@ -391,9 +391,11 @@ export default {
         mx.mxEvent.consume(evt)
       })
 
-      editor.graph.addListener(mx.mxEvent.REMOVE_CELLS, (_, evt) => {
+      editor.graph.addListener(mx.mxEvent.REMOVE_CELLS, async (_, evt) => {
         const cells = evt.getProperty('cells')
-        this.onDelete(cells)
+        console.log('cells:', cells)
+        const responses = await Promise.all(this.onDelete(cells))
+        console.log(responses)
       })
 
       const textNode = this.$refs.xml
