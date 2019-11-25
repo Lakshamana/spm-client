@@ -7,8 +7,9 @@ export const vertexConnection = {
       console.log('onConnect:', type, method, cell, this.processModelId)
       this.$service[type][method](cell, this.processModelId)
         .then(async ({ data }) => {
-          console.log(await data)
-          setCellEntity(cell, await data.id)
+          const { id } = await data
+          console.log('id: ' + id)
+          setCellEntity(cell, id)
         })
         .catch(err => {
           this.handle(err)

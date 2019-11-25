@@ -22,7 +22,9 @@ export function makeSequenceServices(axios) {
     },
 
     delete(cell) {
+      console.log(cell.id)
       const id = getEntityId(cell.id)
+      console.log(id, typeof id)
       return axios.delete(`/api/sequences/${id}`)
     }
   }

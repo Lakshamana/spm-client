@@ -26,6 +26,7 @@ export function maybe(key, value) {
 }
 
 export function setCellEntity(cell, entityId) {
+  console.log('set entityId:', entityId)
   cell.setId(cell.value.nodeName + '#' + entityId)
 }
 

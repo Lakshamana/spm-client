@@ -7,12 +7,12 @@ export function makeDecomposedServices(axios) {
       const theProcessModel = {
         id: pmId
       }
-      return axios.post('/api/normals', { ident, theProcessModel })
+      return axios.post('/api/decomposeds', { ident, theProcessModel })
     },
 
     delete(cell) {
       const id = getEntityId(cell.id)
-      return axios.delete(`/api/decomposed/${id}`)
+      return axios.delete(`/api/decomposeds/${id}`)
     }
   }
 }
