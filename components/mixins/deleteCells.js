@@ -16,7 +16,6 @@ export const deleteCells = {
                 [cell.source.id, cell.target.id].includes(c.id)
             )
           ) {
-            console.log('falled here')
             requests.push(this.$service[type].delete(cell))
             dbg.push(cell)
           }

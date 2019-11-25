@@ -4,12 +4,12 @@ export const vertexConnection = {
   methods: {
     onConnect(params) {
       const { cell, type, method, onfinally } = params
-      console.log('onConnect:', type, method, cell, this.processModelId)
+      console.log('onConnect:', type, method, cell.id, this.processModelId)
       this.$service[type][method](cell, this.processModelId)
-        .then(async ({ data }) => {
-          const { id } = await data
-          console.log('id: ' + id)
-          setCellEntity(cell, id)
+        .then(({ data }) => {
+          console.log('id: ' + data.id)
+          console.log('passed')
+          setCellEntity(cell, data.id)
         })
         .catch(err => {
           this.handle(err)

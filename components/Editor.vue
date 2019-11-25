@@ -260,8 +260,7 @@ export default {
           )
 
           const funct = sender => {
-            document.title =
-              process.env.npm_package_name + ' - ' + sender.getTitle()
+            document.title = 'spm-client - ' + sender.getTitle()
           }
 
           editor.addListener(mx.mxEvent.OPEN, funct)
@@ -305,7 +304,7 @@ export default {
 
       const title = document.getElementById('title')
 
-      if (title != null) {
+      if (title !== null) {
         const f = sender => {
           title.innerHTML = 'mxDraw - ' + sender.getTitle()
         }
@@ -388,14 +387,15 @@ export default {
         this.$service.coordinates
           .send(cell, this.processId)
           .then(({ data }) => console.log(data))
-        mx.mxEvent.consume(evt)
+          .finally(() => mx.mxEvent.consume(evt))
       })
 
       editor.graph.addListener(mx.mxEvent.REMOVE_CELLS, async (_, evt) => {
-        const cells = evt.getProperty('cells')
+        const cells = await evt.getProperty('cells')
         console.log('cells:', cells)
         const responses = await Promise.all(this.onDelete(cells))
         console.log(responses)
+        mx.mxEvent.consume(evt)
       })
 
       const textNode = this.$refs.xml
