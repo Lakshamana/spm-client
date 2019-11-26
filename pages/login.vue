@@ -40,6 +40,7 @@
 <script>
 import Card from '@/components/Card'
 import InputValidation from '@/components/InputValidation'
+import { maybe } from '@/util/utils'
 const pattern = '[a-zA-Z\u00C0-\u017F]'
 
 export default {
@@ -94,10 +95,10 @@ export default {
         .then(({ data }) => {
           this.$store.dispatch('auth/login', {
             username: this.username,
-            token: data.id_token
+            token: data.id_token,
+            ...maybe('lastLogin', this.rememberMe && this.username)
           })
           console.log('Authorization', 'Bearer ' + data.id_token)
-
           const to = this.$route.query.to ? atob(this.$route.query.to) : '/'
           this.$router.push(to)
         })

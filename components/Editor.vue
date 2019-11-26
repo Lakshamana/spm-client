@@ -108,7 +108,8 @@ export default {
 
   computed: {
     ...mapState({
-      processId: state => state.editor.currentProcess
+      processId: state => state.editor.currentProcess,
+      token: state => state.auth.token
     })
   },
 
@@ -159,7 +160,7 @@ export default {
 
   mounted() {
     this.editor = this.createEditor(getXml())
-    this.$service.subscribe()
+    this.$service.processModel.subscribe(this.processModelId, this.token)
   },
 
   beforeDestroy() {
