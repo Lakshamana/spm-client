@@ -160,7 +160,8 @@ export default {
 
   mounted() {
     this.editor = this.createEditor(getXml())
-    this.$service.processModel.subscribe(this.processModelId, this.token)
+    if (this.processModelId)
+      this.$service.processModel.subscribe(this.processModelId, this.token)
   },
 
   beforeDestroy() {

@@ -19,10 +19,7 @@ export const deleteCells = {
             requests.push(this.$service[type].delete(cell))
             dbg.push(cell)
           }
-        } else if (
-          !genericTypes.reqpeople.includes(type) ||
-          !cells[0].getAttribute('type') === 'normal'
-        ) {
+        } else {
           requests.push(this.$service[type].delete(cell))
           dbg.push(cell)
         }
