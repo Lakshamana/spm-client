@@ -109,7 +109,8 @@ export default {
   computed: {
     ...mapState({
       processId: state => state.editor.currentProcess,
-      token: state => state.auth.token
+      token: state => state.auth.token,
+      user: state => state.auth.user
     })
   },
 
@@ -177,9 +178,9 @@ export default {
       const { cell, type, method, onfinally } = params
       console.log('onConnect:', type, method)
       this.$service[type][method](cell, this.processModelId)
-        .then(async ({ data }) => {
-          console.log(await data)
-          this.setCellEntity(cell, await data.id)
+        .then(({ data }) => {
+          console.log(data)
+          this.setCellEntity(cell, data.id)
         })
         .catch(err => {
           this.handle(err)
@@ -333,13 +334,14 @@ export default {
           if (edgeType === 'connector') {
             for (const sideNode of ['source', 'target']) {
               const type = edge[sideNode].getAttribute('type')
-              if (edgeTypes[type] === 'connector')
+              if (edgeTypes[type] === 'connector') {
                 this.onConnect({
                   cell: edge[sideNode],
                   type,
                   method: 'update',
                   onfinally: finish
                 })
+              }
             }
           } else {
             this.onConnect({
@@ -349,6 +351,11 @@ export default {
               onfinally: finish
             })
           }
+          this.$service.processModel.publish(
+            this.user,
+            this.processModelId,
+            edge
+          )
         }
       )
 
@@ -364,7 +371,7 @@ export default {
           .create(vtx, this.processModelId)
           .then(async ({ data }) => {
             console.log(await data)
-            setCellEntity(vtx, await data.id)
+            setCellEntity(vtx, data.id)
             console.log(vtx)
             await this.$service.coordinates.send(vtx, this.processId)
           })

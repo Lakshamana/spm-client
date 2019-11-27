@@ -1,3 +1,5 @@
+import { getEntityId, maybe } from '~/util/utils'
+
 let source
 
 export function makeProcessModelServices(axios) {
@@ -30,6 +32,32 @@ export function makeProcessModelServices(axios) {
           source.removeEventListener('message')
           source.close()
           source = undefined
+        }
+      })
+    },
+
+    publish(username, processModelId, cell) {
+      return axios.post('/api/spm-kafka/publish', {
+        username,
+        processModelId,
+        xmlCell: {
+          nodeType: cell.getAttribute('type'),
+          label: cell.getAttribute('label'),
+          objectId: getEntityId(cell.id),
+          style: cell.style,
+          isEdge: !!cell.edge,
+          ...maybe(
+            'sourceNode',
+            cell.edge && {
+              objectId: cell.source.id
+            }
+          ),
+          ...maybe(
+            'targetNode',
+            cell.edge && {
+              objectId: cell.target.id
+            }
+          )
         }
       })
     }
