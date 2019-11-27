@@ -85,7 +85,6 @@ export default {
           ident: this.newProcessForm.ident
         })
         .then(({ data }) => {
-          console.log(data)
           if (!this.processModelId) {
             this.$store.commit(
               'editor/setCurrentProcessModel',

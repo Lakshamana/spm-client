@@ -2,10 +2,9 @@ import { genericTypes } from '~/service/helpers'
 
 export const deleteCells = {
   methods: {
-    // Must return array of promises
-    onDelete(cells) {
+    async onDelete(cells) {
       const requests = []
-      const dbg = []
+      // const dbg = []
       for (const cell of cells) {
         const type = cell.getAttribute('type')
         if (cell.edge && type !== 'connector') {
@@ -17,15 +16,23 @@ export const deleteCells = {
             )
           ) {
             requests.push(this.$service[type].delete(cell))
-            dbg.push(cell)
+            // dbg.push(cell)
           }
         } else {
           requests.push(this.$service[type].delete(cell))
-          dbg.push(cell)
+          // dbg.push(cell)
         }
       }
-      console.log(dbg)
-      return requests
+      try {
+        await Promise.all(requests)
+        for (const cell of cells) {
+          await this.$service.processModel.publish(
+            this.user,
+            this.processModelId,
+            cell
+          )
+        }
+      } catch (e) {}
     }
   }
 }

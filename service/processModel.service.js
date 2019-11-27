@@ -13,13 +13,12 @@ export function makeProcessModelServices(axios) {
     subscribe(processModelId, token, callback) {
       const url =
         `http://${process.env.API_HOST}:${process.env.API_PORT}/api/spm-kafka/subscribe/${processModelId}` +
-        '?slt=' +
+        '?token=' +
         token
       source = new EventSource(url)
-      source.addEventListener('message', (sdr, evt) => {
-        console.log(sdr, JSON.parse(evt.data))
+      source.onmessage = evt => {
         callback(evt.data)
-      })
+      }
     },
 
     get source() {

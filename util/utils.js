@@ -26,7 +26,6 @@ export function maybe(key, value) {
 }
 
 export function setCellEntity(cell, entityId) {
-  console.log('set entityId:', entityId)
   cell.setId(cell.value.nodeName + '#' + entityId)
 }
 
@@ -41,7 +40,6 @@ export function setEdgeType(edge) {
     edge.target.getAttribute('type') + ',' + edge.source.getAttribute('type')
   for (const end in edgeTypes) {
     if (ends === end || endsInv === end || ends.includes(end)) {
-      console.log('set type:', edgeTypes[end])
       edge.setAttribute('type', edgeTypes[end])
     }
   }

@@ -1,5 +1,5 @@
-const LOGIN_VALIDITY_MILLIS = 86400
-const REMEMBER_ME_LOGIN_VALIDITY_MILLIS = 2592000
+const LOGIN_VALIDITY_MILLIS = 1000 * 60 * 60 * 24
+const REMEMBER_ME_LOGIN_VALIDITY_MILLIS = 2592000000
 
 export default function({ store, redirect, route }) {
   const auth = store.state.auth

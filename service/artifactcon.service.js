@@ -36,7 +36,6 @@ export function makeArtifactConServices(axios) {
   return {
     create(cell, pmId) {
       const ident = cell.getAttribute('label')
-      console.log(ident)
       const theProcessModel = {
         id: pmId
       }

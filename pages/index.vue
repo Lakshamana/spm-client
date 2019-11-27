@@ -56,7 +56,6 @@ export default {
       this.$axios
         .get(`/api/processes/xml/${this.processModelId}`)
         .then(({ data }) => {
-          console.log(data)
           this.$refs.wrapper.setXmlValue(data)
         })
     }

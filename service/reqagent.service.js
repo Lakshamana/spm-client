@@ -7,7 +7,6 @@ export function makeReqAgentServices(axios) {
     },
 
     update(cell) {
-      console.log('update')
       const id = getEntityId(cell.id)
       const theNormal = {
         id: getEntityId(cell.edges[0].target.id)

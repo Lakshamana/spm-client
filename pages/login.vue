@@ -63,7 +63,7 @@ export default {
           'Campo obrigatório e mínimo de 5 caracteres. Digite letras apenas'
         ],
         pattern: `${pattern}+`,
-        minlength: 5,
+        minlength: 3,
         required: true,
         rounded: true
       },
@@ -74,7 +74,7 @@ export default {
           'Campo obrigatório e mínimo de 5 caracteres. Digite letras apenas'
         ],
         pattern: `${pattern}+`,
-        minlength: 5,
+        minlength: 3,
         required: true,
         rounded: true,
         passwordReveal: true
@@ -98,7 +98,6 @@ export default {
             token: data.id_token,
             ...maybe('lastLogin', this.rememberMe && this.username)
           })
-          console.log('Authorization', 'Bearer ' + data.id_token)
           const to = this.$route.query.to ? atob(this.$route.query.to) : '/'
           this.$router.push(to)
         })

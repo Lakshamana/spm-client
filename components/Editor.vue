@@ -116,12 +116,9 @@ export default {
 
   watch: {
     processModelId(val) {
-      console.log('New Value:', val)
-
       // if our graph is not empty
       const cells = Object.values(this.editor.graph.model.cells)
       if (cells.length > 2) {
-        console.log('updating graph state...')
         // remove first 2 cells
         this.syncGraphState(cells.slice(2))
       }
@@ -162,7 +159,13 @@ export default {
   mounted() {
     this.editor = this.createEditor(getXml())
     if (this.processModelId)
-      this.$service.processModel.subscribe(this.processModelId, this.token)
+      this.$service.processModel.subscribe(
+        this.processModelId,
+        this.token,
+        cell => {
+          this.graph.model.cells.id = cell
+        }
+      )
   },
 
   beforeDestroy() {
@@ -170,16 +173,12 @@ export default {
   },
 
   methods: {
-    syncGraphState(cells) {
-      console.log(cells)
-    },
+    syncGraphState(cells) {},
 
     onConnect(params) {
       const { cell, type, method, onfinally } = params
-      console.log('onConnect:', type, method)
       this.$service[type][method](cell, this.processModelId)
         .then(({ data }) => {
-          console.log(data)
           this.setCellEntity(cell, data.id)
         })
         .catch(err => {
@@ -317,7 +316,7 @@ export default {
 
       editor.graph.connectionHandler.addListener(
         mx.mxEvent.CONNECT,
-        (_, evt) => {
+        async (_, evt) => {
           const edge = evt.getProperty('cell')
           try {
             this.validateConnection(edge)
@@ -351,7 +350,7 @@ export default {
               onfinally: finish
             })
           }
-          this.$service.processModel.publish(
+          await this.$service.processModel.publish(
             this.user,
             this.processModelId,
             edge
@@ -370,10 +369,13 @@ export default {
         this.$service[vtxType]
           .create(vtx, this.processModelId)
           .then(async ({ data }) => {
-            console.log(await data)
             setCellEntity(vtx, data.id)
-            console.log(vtx)
             await this.$service.coordinates.send(vtx, this.processId)
+            await this.$service.processModel.publish(
+              this.user,
+              this.processModelId,
+              vtx
+            )
           })
           .catch(err => {
             this.handle(err)
@@ -398,15 +400,19 @@ export default {
         }
         this.$service.coordinates
           .send(cell, this.processId)
-          .then(({ data }) => console.log(data))
+          .then(async ({ data }) => {
+            await this.$service.processModel.publish(
+              this.user,
+              this.processModelId,
+              cell
+            )
+          })
           .finally(() => mx.mxEvent.consume(evt))
       })
 
       editor.graph.addListener(mx.mxEvent.REMOVE_CELLS, async (_, evt) => {
         const cells = await evt.getProperty('cells')
-        console.log('cells:', cells)
-        const responses = await Promise.all(this.onDelete(cells))
-        console.log(responses)
+        await Promise.all(this.onDelete(cells))
         mx.mxEvent.consume(evt)
       })
 
