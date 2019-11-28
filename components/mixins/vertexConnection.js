@@ -11,6 +11,7 @@ export const vertexConnection = {
         .catch(err => {
           this.handle(err)
           this.editor.graph.removeCells([cell], false)
+          throw new Error('unsuccessful connection')
         })
         .finally(onfinally)
     }

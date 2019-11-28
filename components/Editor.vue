@@ -33,7 +33,12 @@ import mxGraphFactory from 'mxgraph-lakshamana'
 import { mapState } from 'vuex'
 import { errorHandler } from './mixins/errorHandler'
 import { deleteCells } from './mixins/deleteCells'
-import { setEdgeType, setCellEntity } from '@/util/utils'
+import {
+  setEdgeType,
+  setCellEntity,
+  updateCell,
+  createCell
+} from '@/util/utils'
 import { edgeTypes } from '@/service/helpers'
 import { getXml } from '@/util/xml'
 
@@ -161,9 +166,24 @@ export default {
     if (this.processModelId)
       this.$service.processModel.subscribe(
         this.processModelId,
-        this.token,
-        cell => {
-          this.graph.model.cells.id = cell
+        this.user,
+        data => {
+          const graph = this.editor.graph
+          console.log(data)
+          const cellId = data.objectId
+          const cell = graph.model.getCell(cellId)
+          if (cell) {
+            console.log('cell exists')
+            updateCell(cell, data, graph)
+          } else {
+            console.log('cell doesnt exists')
+            const enc = new mx.mxCodec()
+            const node = enc.encode(graph.getModel())
+            const xml = createCell(data, mx.mxUtils.getPrettyXml(node))
+            const doc = mx.mxUtils.parseXml(xml)
+            const dec = new mx.mxCodec(doc)
+            dec.decode(doc.documentElement, graph.getModel())
+          }
         }
       )
   },
@@ -330,31 +350,33 @@ export default {
           const finish = () => {
             mx.mxEvent.consume(evt)
           }
-          if (edgeType === 'connector') {
-            for (const sideNode of ['source', 'target']) {
-              const type = edge[sideNode].getAttribute('type')
-              if (edgeTypes[type] === 'connector') {
-                this.onConnect({
-                  cell: edge[sideNode],
-                  type,
-                  method: 'update',
-                  onfinally: finish
-                })
+          try {
+            if (edgeType === 'connector') {
+              for (const sideNode of ['source', 'target']) {
+                const type = edge[sideNode].getAttribute('type')
+                if (edgeTypes[type] === 'connector') {
+                  this.onConnect({
+                    cell: edge[sideNode],
+                    type,
+                    method: 'update',
+                    onfinally: finish
+                  })
+                }
               }
+            } else {
+              this.onConnect({
+                cell: edge,
+                type: edgeType,
+                method: 'create',
+                onfinally: finish
+              })
             }
-          } else {
-            this.onConnect({
-              cell: edge,
-              type: edgeType,
-              method: 'create',
-              onfinally: finish
-            })
-          }
-          await this.$service.processModel.publish(
-            this.user,
-            this.processModelId,
-            edge
-          )
+            await this.$service.processModel.publish(
+              this.user,
+              this.processModelId,
+              edge
+            )
+          } catch (e) {}
         }
       )
 
@@ -412,7 +434,7 @@ export default {
 
       editor.graph.addListener(mx.mxEvent.REMOVE_CELLS, async (_, evt) => {
         const cells = await evt.getProperty('cells')
-        await Promise.all(this.onDelete(cells))
+        await this.onDelete(cells)
         mx.mxEvent.consume(evt)
       })
 

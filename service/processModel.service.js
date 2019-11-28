@@ -1,4 +1,4 @@
-import { getEntityId, maybe } from '~/util/utils'
+import { maybe } from '~/util/utils'
 
 let source
 
@@ -17,7 +17,7 @@ export function makeProcessModelServices(axios) {
         token
       source = new EventSource(url)
       source.onmessage = evt => {
-        callback(evt.data)
+        callback(JSON.parse(evt.data).xmlCell)
       }
     },
 
@@ -42,9 +42,11 @@ export function makeProcessModelServices(axios) {
         xmlCell: {
           nodeType: cell.getAttribute('type'),
           label: cell.getAttribute('label'),
-          objectId: getEntityId(cell.id),
+          objectId: cell.id,
           style: cell.style,
           isEdge: !!cell.edge,
+          ...maybe('x', !cell.edge && cell.geometry.x),
+          ...maybe('y', !cell.edge && cell.geometry.y),
           ...maybe(
             'sourceNode',
             cell.edge && {

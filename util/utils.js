@@ -59,3 +59,57 @@ export function relatedActivities(edge) {
     }
   }
 }
+
+/**
+ *
+ * @param {*} cellData
+ * @param {String} graphXml
+ */
+export function createCell(cellData, graphXml) {
+  const xmlList = graphXml.split('\n')
+  const {
+    nodeType,
+    label,
+    objectId,
+    style,
+    isEdge,
+    x,
+    y,
+    sourceNode,
+    targetNode
+  } = cellData
+  const typelow = nodeType.toLowerCase()
+  const add = `  <${
+    !isEdge ? capit(nodeType) : 'Connector'
+  } type="${typelow}" label="${label || ''}" id="${objectId}">
+     <mxCell${style ? ` style="${style}"` : ''} parent="1" ${
+    isEdge ? 'edge="1"' : 'vertex="1"'
+  }${
+    isEdge
+      ? ` source="${sourceNode.objectId}" target="${targetNode.objectId}"`
+      : ''
+  }>
+      <mxGeometry x="${x}" y="${y}" width="60" height="60" as="geometry"/>
+     </mxCell>
+    </${!isEdge ? capit(nodeType) : 'Connector'}>`
+  xmlList.splice(xmlList.length - 3, 0, ...add.split('\n'))
+  return xmlList.join('\n')
+}
+
+export function capit(word) {
+  const first = word[0]
+  const rest = word.substring(1, word.length)
+  return first.toUpperCase() + rest
+}
+
+export function updateCell(cell, data, graph) {
+  cell.setAttribute('id', data.id)
+  cell.setAttribute('type', data.nodeType)
+  cell.setAttribute('label', data.label)
+  cell.setAttribute('style', data.style)
+  if (!cell.edge) {
+    const dx = data.x - cell.geometry.x
+    const dy = data.y - cell.geometry.y
+    graph.translateCell(cell, dx, dy)
+  }
+}
