@@ -102,12 +102,19 @@ export function capit(word) {
   return first.toUpperCase() + rest
 }
 
+export function getCell(graph, id) {
+  const cells = Object.values(graph.model.cells)
+  const cell = cells.find(c => c.id === id)
+  return cell
+}
+
 export function updateCell(cell, data, graph) {
   cell.setAttribute('id', data.id)
   cell.setAttribute('type', data.nodeType)
   cell.setAttribute('label', data.label)
   cell.setAttribute('style', data.style)
   if (!cell.edge) {
+    console.log('is vertex')
     const dx = data.x - cell.geometry.x
     const dy = data.y - cell.geometry.y
     graph.translateCell(cell, dx, dy)

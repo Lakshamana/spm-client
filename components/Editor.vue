@@ -37,7 +37,8 @@ import {
   setEdgeType,
   setCellEntity,
   updateCell,
-  createCell
+  createCell,
+  getCell
 } from '@/util/utils'
 import { edgeTypes } from '@/service/helpers'
 import { getXml } from '@/util/xml'
@@ -170,8 +171,8 @@ export default {
         data => {
           const graph = this.editor.graph
           console.log(data)
-          const cellId = data.objectId
-          const cell = graph.model.getCell(cellId)
+          const cell = getCell(graph, data.objectId)
+          console.log('cell:', cell)
           if (cell) {
             console.log('cell exists')
             updateCell(cell, data, graph)
@@ -376,7 +377,9 @@ export default {
               this.processModelId,
               edge
             )
-          } catch (e) {}
+          } catch (e) {
+            console.log('catch')
+          }
         }
       )
 
@@ -393,6 +396,7 @@ export default {
           .then(async ({ data }) => {
             setCellEntity(vtx, data.id)
             await this.$service.coordinates.send(vtx, this.processId)
+            console.log('publish new vertex')
             await this.$service.processModel.publish(
               this.user,
               this.processModelId,
