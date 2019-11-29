@@ -36,7 +36,6 @@ export function makeProcessModelServices(axios) {
     },
 
     publish(username, processModelId, cell) {
-      console.log(username, processModelId, cell.id)
       return axios.post('/api/spm-kafka/publish', {
         username,
         processModelId,

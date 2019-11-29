@@ -33,6 +33,7 @@ import mxGraphFactory from 'mxgraph-lakshamana'
 import { mapState } from 'vuex'
 import { errorHandler } from './mixins/errorHandler'
 import { deleteCells } from './mixins/deleteCells'
+import { vertexConnection } from './mixins/vertexConnection'
 import {
   setEdgeType,
   setCellEntity,
@@ -47,7 +48,7 @@ const mx = new mxGraphFactory()
 
 export default {
   name: 'Editor',
-  mixins: [errorHandler, deleteCells],
+  mixins: [errorHandler, deleteCells, vertexConnection],
   props: {
     processModelId: {
       type: Number,
@@ -356,7 +357,7 @@ export default {
               for (const sideNode of ['source', 'target']) {
                 const type = edge[sideNode].getAttribute('type')
                 if (edgeTypes[type] === 'connector') {
-                  this.onConnect({
+                  await this.onConnect({
                     cell: edge[sideNode],
                     type,
                     method: 'update',
@@ -365,7 +366,8 @@ export default {
                 }
               }
             } else {
-              this.onConnect({
+              console.log('create sequence')
+              await this.onConnect({
                 cell: edge,
                 type: edgeType,
                 method: 'create',
