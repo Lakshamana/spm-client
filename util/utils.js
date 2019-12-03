@@ -68,7 +68,6 @@ export function relatedActivities(edge) {
 export function createCell(cellData, graphXml) {
   const xmlList = graphXml.split('\n')
   const {
-    nodeType,
     label,
     objectId,
     style,
@@ -78,6 +77,7 @@ export function createCell(cellData, graphXml) {
     sourceNode,
     targetNode
   } = cellData
+  const nodeType = objectId.split('#')[0]
   const typelow = nodeType.toLowerCase()
   const add = `  <${
     !isEdge ? capit(nodeType) : 'Connector'
@@ -99,6 +99,7 @@ export function createCell(cellData, graphXml) {
 export function capit(word) {
   const first = word[0]
   const rest = word.substring(1, word.length)
+  console.log(word, first.toUpperCase(), rest)
   return first.toUpperCase() + rest
 }
 

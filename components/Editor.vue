@@ -33,7 +33,6 @@ import mxGraphFactory from 'mxgraph-lakshamana'
 import { mapState } from 'vuex'
 import { errorHandler } from './mixins/errorHandler'
 import { deleteCells } from './mixins/deleteCells'
-import { vertexConnection } from './mixins/vertexConnection'
 import {
   setEdgeType,
   setCellEntity,
@@ -48,7 +47,7 @@ const mx = new mxGraphFactory()
 
 export default {
   name: 'Editor',
-  mixins: [errorHandler, deleteCells, vertexConnection],
+  mixins: [errorHandler, deleteCells],
   props: {
     processModelId: {
       type: Number,
@@ -182,6 +181,7 @@ export default {
             const enc = new mx.mxCodec()
             const node = enc.encode(graph.getModel())
             const xml = createCell(data, mx.mxUtils.getPrettyXml(node))
+            console.log(xml)
             const doc = mx.mxUtils.parseXml(xml)
             const dec = new mx.mxCodec(doc)
             dec.decode(doc.documentElement, graph.getModel())
@@ -197,17 +197,22 @@ export default {
   methods: {
     syncGraphState(cells) {},
 
-    onConnect(params) {
+    async onConnect(params) {
       const { cell, type, method, onfinally } = params
-      this.$service[type][method](cell, this.processModelId)
-        .then(({ data }) => {
-          this.setCellEntity(cell, data.id)
-        })
-        .catch(err => {
-          this.handle(err)
-          this.editor.graph.removeCells([cell], false)
-        })
-        .finally(onfinally)
+      try {
+        const { data } = await this.$service[type][method](
+          cell,
+          this.processModelId
+        )
+        console.log(data)
+        setCellEntity(cell, data.id)
+      } catch (e) {
+        this.handle(e)
+        this.editor.graph.removeCells([cell], false)
+        throw new Error('unsuccessful connection')
+      } finally {
+        onfinally()
+      }
     },
 
     setXmlValue(xml) {
@@ -371,7 +376,8 @@ export default {
                 cell: edge,
                 type: edgeType,
                 method: 'create',
-                onfinally: finish
+                onfinally: finish,
+                token: this.token
               })
             }
             await this.$service.processModel.publish(
