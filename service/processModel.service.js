@@ -35,10 +35,11 @@ export function makeProcessModelServices(axios) {
       })
     },
 
-    publish(username, processModelId, cell) {
+    publish(username, processModelId, cell, operation) {
       return axios.post('/api/spm-kafka/publish', {
         username,
         processModelId,
+        ...maybe('operation', operation),
         xmlCell: {
           nodeType: cell.getAttribute('type'),
           label: cell.getAttribute('label'),

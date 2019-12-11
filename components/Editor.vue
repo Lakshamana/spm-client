@@ -32,7 +32,6 @@
 import mxGraphFactory from 'mxgraph-lakshamana'
 import { mapState } from 'vuex'
 import { errorHandler } from './mixins/errorHandler'
-import { deleteCells } from './mixins/deleteCells'
 import {
   setEdgeType,
   setCellEntity,
@@ -47,7 +46,7 @@ const mx = new mxGraphFactory()
 
 export default {
   name: 'Editor',
-  mixins: [errorHandler, deleteCells],
+  mixins: [errorHandler],
   props: {
     processModelId: {
       type: Number,
@@ -171,13 +170,18 @@ export default {
         data => {
           const graph = this.editor.graph
           console.log(data)
+          const { operation } = data
           const cell = getCell(graph, data.objectId)
           console.log('cell:', cell)
           if (cell) {
             console.log('cell exists')
+            if (operation === 'delete') {
+              graph.removeCells([cell], cell.edges.length > 0)
+            }
             updateCell(cell, data, graph)
           } else {
             console.log('cell doesnt exists')
+            if (operation === 'delete') return
             const enc = new mx.mxCodec()
             const node = enc.encode(graph.getModel())
             const xml = createCell(data, mx.mxUtils.getPrettyXml(node))
@@ -212,6 +216,16 @@ export default {
         throw new Error('unsuccessful connection')
       } finally {
         onfinally()
+      }
+    },
+
+    async onDelete(params) {
+      const { cell, type, method, forceUpdate } = params
+      try {
+        await this.$service[type][method](cell, forceUpdate)
+      } catch (e) {
+        this.handle(e)
+        throw new Error('unsuccessful deletion')
       }
     },
 
@@ -365,13 +379,11 @@ export default {
                   await this.onConnect({
                     cell: edge[sideNode],
                     type,
-                    method: 'update',
-                    onfinally: finish
+                    method: 'update'
                   })
                 }
               }
             } else {
-              console.log('create sequence')
               await this.onConnect({
                 cell: edge,
                 type: edgeType,
@@ -446,7 +458,45 @@ export default {
 
       editor.graph.addListener(mx.mxEvent.REMOVE_CELLS, async (_, evt) => {
         const cells = await evt.getProperty('cells')
-        await this.onDelete(cells)
+        const edgesFirst = []
+
+        // Put edge cells on first place
+        for (const cell of cells) {
+          if (cell.edge) edgesFirst.unshift(cell)
+          else edgesFirst.push(cell)
+        }
+
+        for (const cell of edgesFirst) {
+          const cellType = cell.getAttribute('type')
+          try {
+            if (cellType === 'connector') {
+              for (const sideNode of ['source', 'target']) {
+                const type = cell[sideNode].getAttribute('type')
+                if (cellType[type] === 'connector') {
+                  await this.onConnect({
+                    cell: cell[sideNode],
+                    type,
+                    method: 'update',
+                    forceUpdate: true
+                  })
+                }
+              }
+            } else {
+              await this.onConnect({
+                cell,
+                type: cellType,
+                method: 'delete'
+              })
+            }
+            await this.$service.processModel.publish(
+              this.user,
+              this.processModelId,
+              cell
+            )
+          } catch (e) {
+            console.log('catch')
+          }
+        }
         mx.mxEvent.consume(evt)
       })
 

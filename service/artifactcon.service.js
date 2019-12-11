@@ -1,7 +1,7 @@
 import { genericTypes } from './helpers'
 import { getEntityId, maybe } from '@/util/utils'
 
-function artifactConArguments(cell) {
+function artifactConArguments(cell, forceUpdate) {
   const toActivities = []
   const fromActivities = []
   const toMultipleCons = []
@@ -26,9 +26,18 @@ function artifactConArguments(cell) {
     }
   }
   return {
-    ...maybe('fromActivities', fromActivities.length > 0 && fromActivities),
-    ...maybe('toActivities', toActivities.length > 0 && toActivities),
-    ...maybe('toMultipleCons', toMultipleCons.length > 0 && toMultipleCons)
+    ...maybe(
+      'fromActivities',
+      (fromActivities.length > 0 || forceUpdate) && fromActivities
+    ),
+    ...maybe(
+      'toActivities',
+      (toActivities.length > 0 || forceUpdate) && toActivities
+    ),
+    ...maybe(
+      'toMultipleCons',
+      (toMultipleCons.length > 0 || forceUpdate) && toMultipleCons
+    )
   }
 }
 

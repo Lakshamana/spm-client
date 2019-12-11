@@ -11,7 +11,7 @@ export function makeBranchANDConServices(axios) {
       return axios.post('/api/branch-and-cons', { ident, theProcessModel })
     },
 
-    update(cell) {
+    update(cell, forceUpdate) {
       const toActivities = []
       const toMultipleCons = []
       const fromActivity = {}
@@ -42,15 +42,21 @@ export function makeBranchANDConServices(axios) {
       return axios.put('/api/branch-and-cons', {
         id: getEntityId(cell.id),
         ident,
-        ...maybe('toActivities', toActivities.length > 0 && toActivities),
-        ...maybe('toMultipleCons', toMultipleCons.length > 0 && toMultipleCons),
+        ...maybe(
+          'toActivities',
+          (toActivities.length || forceUpdate) > 0 && toActivities
+        ),
+        ...maybe(
+          'toMultipleCons',
+          (toMultipleCons.length > 0 || forceUpdate) && toMultipleCons
+        ),
         ...maybe(
           'fromActivity',
-          Object.keys(fromActivity).length > 0 && fromActivity
+          (Object.keys(fromActivity).length > 0 || forceUpdate) && fromActivity
         ),
         ...maybe(
           'fromMultipleConnection',
-          Object.keys(fromMultipleConnection).length > 0 &&
+          (Object.keys(fromMultipleConnection).length > 0 || forceUpdate) &&
             fromMultipleConnection
         )
       })

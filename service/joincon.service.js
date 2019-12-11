@@ -11,7 +11,7 @@ export function makeJoinConServices(axios) {
       return axios.post('/api/join-cons', { ident, theProcessModel })
     },
 
-    update(cell) {
+    update(cell, forceUpdate) {
       const fromActivities = []
       const fromMultipleCons = []
       const toActivity = {}
@@ -42,18 +42,22 @@ export function makeJoinConServices(axios) {
       return axios.put('/api/join-cons', {
         id: getEntityId(cell.id),
         ident,
-        ...maybe('fromActivities', fromActivities.length > 0 && fromActivities),
+        ...maybe(
+          'fromActivities',
+          (fromActivities.length > 0 || forceUpdate) && fromActivities
+        ),
         ...maybe(
           'fromMultipleCons',
-          fromMultipleCons.length > 0 && fromMultipleCons
+          (fromMultipleCons.length > 0 || forceUpdate) && fromMultipleCons
         ),
         ...maybe(
           'toActivity',
-          Object.keys(toActivity).length > 0 && toActivity
+          (Object.keys(toActivity).length || forceUpdate) > 0 && toActivity
         ),
         ...maybe(
           'toMultipleCon',
-          Object.keys(toMultipleCon).length > 0 && toMultipleCon
+          (Object.keys(toMultipleCon).length || forceUpdate) > 0 &&
+            toMultipleCon
         )
       })
     },

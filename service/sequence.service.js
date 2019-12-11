@@ -2,7 +2,7 @@ import { getEntityId, relatedActivities, createIdent } from '@/util/utils'
 
 export function makeSequenceServices(axios) {
   return {
-    create(edge, pmId, token) {
+    create(edge, pmId) {
       const ident = createIdent(edge)
       const theProcessModel = {
         id: pmId
