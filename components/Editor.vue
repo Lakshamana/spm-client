@@ -177,6 +177,7 @@ export default {
             console.log('cell exists')
             if (operation === 'delete') {
               graph.removeCells([cell], cell.edges.length > 0)
+              return
             }
             updateCell(cell, data, graph)
           } else {
@@ -220,6 +221,7 @@ export default {
     },
 
     async onDelete(params) {
+      console.log('ondelete')
       const { cell, type, method, forceUpdate } = params
       try {
         await this.$service[type][method](cell, forceUpdate)
@@ -457,7 +459,7 @@ export default {
       })
 
       editor.graph.addListener(mx.mxEvent.REMOVE_CELLS, async (_, evt) => {
-        const cells = await evt.getProperty('cells')
+        const cells = evt.getProperty('cells')
         const edgesFirst = []
 
         // Put edge cells on first place
@@ -466,6 +468,8 @@ export default {
           else edgesFirst.push(cell)
         }
 
+        console.log('edgesFirst:', edgesFirst)
+
         for (const cell of edgesFirst) {
           const cellType = cell.getAttribute('type')
           try {
@@ -473,7 +477,7 @@ export default {
               for (const sideNode of ['source', 'target']) {
                 const type = cell[sideNode].getAttribute('type')
                 if (cellType[type] === 'connector') {
-                  await this.onConnect({
+                  await this.onDelete({
                     cell: cell[sideNode],
                     type,
                     method: 'update',
@@ -482,7 +486,7 @@ export default {
                 }
               }
             } else {
-              await this.onConnect({
+              await this.onDelete({
                 cell,
                 type: cellType,
                 method: 'delete'
@@ -491,7 +495,8 @@ export default {
             await this.$service.processModel.publish(
               this.user,
               this.processModelId,
-              cell
+              cell,
+              'delete'
             )
           } catch (e) {
             console.log('catch')
