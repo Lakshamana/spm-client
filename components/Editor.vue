@@ -337,7 +337,7 @@ export default {
 
       mx.mxEdgeHandler.prototype.snapToTerminals = true
 
-      mx.mxGraph.prototype.setCellsResizable(false)
+      mx.mxGraph.prototype.setCellsResizable(true)
 
       const IMG_PATH = process.env.MXIMGPATH
       mx.mxConnectionHandler.prototype.connectImage = new mx.mxImage(
